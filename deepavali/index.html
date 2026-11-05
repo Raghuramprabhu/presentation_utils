@@ -2915,6 +2915,15 @@ function presenter() {
   let rz = 0;
   addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => render(false), 150); });
 
+  // follow a new session started in another tab or in the reveal page
+  addEventListener("storage", e => {
+    if (e.key !== "dc-topic" || !e.newValue) return;
+    let t; try { t = JSON.parse(e.newValue); } catch (er) { return; }
+    if (!t || t === topic) return;
+    topic = t; cut = store.get("dc-cut", { 1: 0, 2: 0, 3: 0 }); hidden = store.get("dc-hidden", { 1: [], 2: [], 3: [] }); local = store.get("dc-local", []);
+    remote.length = 0; seen.clear(); lastLit = 0; $$(".cloud .w").forEach(n => n.remove());
+    renderQR(); connect(); render(false);
+  });
   renderQR(); renderTabs(); render(false); connect();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => render(false));
 }
