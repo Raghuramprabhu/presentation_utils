@@ -48,6 +48,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .qrwrap .box{width:min(54vh,72vw);aspect-ratio:1;border-radius:16px;overflow:hidden;box-shadow:0 0 0 8px rgba(255,182,39,.25),0 0 80px rgba(255,182,39,.35)}
 .qrwrap .box svg{display:block;width:100%;height:100%}
 .qrwrap p{margin:0;color:var(--muted);font-size:clamp(1rem,2.4vh,1.4rem)}
+#cloudFrame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:9;opacity:0;transition:opacity .9s;background:#120c1a}
+#cloudFrame.on{opacity:1}
 @media (prefers-reduced-motion:reduce){.theme p{transition-duration:.01s}}
 </style>
 </head>
@@ -60,6 +62,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
   <p class="l3">Generations</p>
 </div>
 <canvas id="fx" aria-hidden="true"></canvas>
+<iframe id="cloudFrame" title="Diya Cloud live word cloud" hidden></iframe>
 <div class="qrwrap" id="qrwrap"><h2>Your turn. Light a diya.</h2><div class="box" id="qrbox"></div><p>Scan, type one word, tap Light my diya. No app, no sign-in.</p></div>
 <div class="hint" id="hint">Click or Next to advance · R reset · F full screen</div>
 <script>
@@ -2690,9 +2693,16 @@ function runRelay() {
 function celebrate() { [0, 1, 2].forEach(i => setTimeout(() => { burst(W * (0.2 + Math.random() * 0.6), H * (0.15 + Math.random() * 0.3), 140); boom(); }, i * 330)); }
 function reset() {
   timers.forEach(clearTimeout); timers = []; stage = 0; firstDiya.lit = 0; diyas.forEach(p => p.lit = 0); parts.length = 0;
-  theme.classList.remove("show", "dim"); hint.classList.remove("gone"); dim = 1; dimTarget = 1; rocket = null; tparts = []; spinner = null; qrAnim = null; document.getElementById("qrwrap").classList.remove("on");
+  theme.classList.remove("show", "dim"); hint.classList.remove("gone"); dim = 1; dimTarget = 1; rocket = null; tparts = []; spinner = null; qrAnim = null; document.getElementById("qrwrap").classList.remove("on"); const cf = document.getElementById("cloudFrame"); cf.classList.remove("on"); cf.hidden = true; cf.removeAttribute("src");
 }
-function next() { if (stage === 0) lightFirst(); else if (stage === 1) runRelay(); else if (stage === 3) launchRocket(); else if (stage === 5) startSpin(); else if (stage === 7) celebrate(); }
+function next() { if (stage === 0) lightFirst(); else if (stage === 1) runRelay(); else if (stage === 3) launchRocket(); else if (stage === 5) startSpin(); else if (stage === 7) showCloud(); }
+function showCloud() {
+  stage = 8; dimTarget = 0;
+  document.getElementById("qrwrap").classList.remove("on");
+  const f = document.getElementById("cloudFrame");
+  f.onload = () => { f.classList.add("on"); try { f.contentWindow.focus(); } catch (e) { /* ignore */ } };
+  f.hidden = false; f.src = "index.html#present";
+}
 
 /* ---------- loop ---------- */
 function frame(now) {
