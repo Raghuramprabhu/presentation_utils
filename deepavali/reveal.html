@@ -35,6 +35,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .theme.show .l2{transition-delay:.45s}
 .theme.show .l3{transition-delay:.75s}
 .theme.show .l1{text-shadow:0 0 30px rgba(255,182,39,.35)}
+.theme{transition:opacity .9s}
+.theme.dim{opacity:0}
 .cap{position:fixed;left:4vw;bottom:5vh;text-align:left;z-index:4;font-size:clamp(1rem,2vw,1.6rem);letter-spacing:.18em;text-transform:uppercase;opacity:0;transition:opacity .35s;pointer-events:none}
 .cap.on{opacity:1}
 .cap b{font-family:var(--display);font-weight:400;letter-spacing:.04em;font-size:1.5em;margin-right:.5em;text-transform:none}
@@ -51,16 +53,15 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
   <p class="l2">Different</p>
   <p class="l3">Generations</p>
 </div>
-<div class="cap" id="cap" aria-live="polite"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
-<div class="hint" id="hint">Click or Next: light the first diya · R reset · F full screen</div>
+<div class="hint" id="hint">Click or Next to advance · R reset · F full screen</div>
 <script>
 (() => {
 "use strict";
 const reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 const cv = document.getElementById("cv"), cx = cv.getContext("2d");
 const fxc = document.getElementById("fx"), fx = fxc.getContext("2d");
-const theme = document.getElementById("theme"), cap = document.getElementById("cap"), hint = document.getElementById("hint");
+const theme = document.getElementById("theme"), hint = document.getElementById("hint");
 
 /* ---------- generations (one wave each) ---------- */
 const WAVES = [
@@ -150,6 +151,7 @@ function makeSprites() {
 }
 function drawDiya(p, now) {
   const x = CX + p.ux * R, y = CY + p.uy * R;
+  cx.globalAlpha = dim;
   // bowl
   cx.fillStyle = p.lit ? "#a34a22" : "rgba(120,96,130,.28)";
   cx.beginPath(); cx.ellipse(x, y, S * 1.25, S * 0.62, 0, 0, Math.PI); cx.closePath(); cx.fill();
@@ -158,7 +160,7 @@ function drawDiya(p, now) {
   const age = (now - p.lit) / 320, k = age >= 1 ? 1 : 1 + 0.6 * Math.sin(age * Math.PI) ; // ignite overshoot
   const grow = Math.min(1, age * 1.6);
   const fl = 1 + 0.09 * Math.sin(now / 140 + p.ph) + 0.05 * Math.sin(now / 67 + p.ph * 2);
-  const sp = sprites[col]; if (sp) { cx.globalCompositeOperation = "lighter"; cx.globalAlpha = 0.9 * grow; cx.drawImage(sp.c, x - sp.s / 2, y - S * 1.2 - sp.s / 2, sp.s, sp.s); cx.globalAlpha = 1; cx.globalCompositeOperation = "source-over"; }
+  const sp = sprites[col]; if (sp) { cx.globalCompositeOperation = "lighter"; cx.globalAlpha = 0.9 * grow * dim; cx.drawImage(sp.c, x - sp.s / 2, y - S * 1.2 - sp.s / 2, sp.s, sp.s); cx.globalAlpha = dim; cx.globalCompositeOperation = "source-over"; }
   const h = S * 2.3 * k * fl * grow, wd = S * 0.75 * grow;
   const fy = y - S * 0.25;
   const gr = cx.createLinearGradient(x, fy, x, fy - h);
@@ -168,6 +170,7 @@ function drawDiya(p, now) {
   cx.quadraticCurveTo(x + wd * 1.4, fy - h * 0.35, x, fy);
   cx.quadraticCurveTo(x - wd * 1.4, fy - h * 0.35, x, fy - h);
   cx.fill();
+  cx.globalAlpha = 1;
 }
 
 /* ---------- sparks / fireworks ---------- */
@@ -184,10 +187,113 @@ function drawParts() {
   fx.globalAlpha = 1; fx.globalCompositeOperation = "source-over";
 }
 
+
+/* ---------- rocket finale ---------- */
+let dim = 1, dimTarget = 1, rocket = null, tparts = [], textAt = 0, lines = [];
+function noiseHit(dur, type, freq, vol) {
+  const a = audio(); if (!a) return; const t = a.currentTime;
+  const len = Math.floor(a.sampleRate * dur), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+  s.buffer = buf; f.type = type; f.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(f); f.connect(g); g.connect(master); s.start(t);
+}
+function whistle(dur) {
+  const a = audio(); if (!a) return; const t = a.currentTime, o = a.createOscillator(), g = a.createGain();
+  o.frequency.setValueAtTime(600, t); o.frequency.exponentialRampToValueAtTime(2600, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.1); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05);
+}
+function layoutWish() {
+  const big = Math.min(W * 0.11, H * 0.17), small = big * 0.36;
+  const top = H * 0.5 - (small * 1.5 * 2 + big * 1.1) / 2;
+  lines = [
+    { t: "Lennox India Toastmasters Club", size: small, font: `800 ${small}px Mukta, "Segoe UI", system-ui, sans-serif`, y: top + small, col: "#f7ecd8" },
+    { t: "wishes you and your family a very", size: small, font: `400 ${small}px Mukta, "Segoe UI", system-ui, sans-serif`, y: top + small * 2.5, col: "#f7ecd8" },
+    { t: "Happy Diwali 2026", size: big, font: `${big}px "Rozha One", Georgia, serif`, y: top + small * 2.5 + big * 1.15, col: "grad" }
+  ];
+}
+function sampleText(apexX, apexY) {
+  layoutWish();
+  const oc = document.createElement("canvas"); oc.width = W; oc.height = H; const o = oc.getContext("2d", { willReadFrequently: true });
+  const pts = [];
+  const pal = ["#ffd36b", "#ffb627", "#ff8a3d", "#e2412b", "#fff1c1"];
+  lines.forEach((ln, li) => {
+    o.clearRect(0, 0, W, H); o.font = ln.font; o.textAlign = "center"; o.textBaseline = "alphabetic"; o.fillStyle = "#fff"; o.fillText(ln.t, W / 2, ln.y);
+    const gap = Math.max(2, Math.round(ln.size / (li === 2 ? 15 : 9)));
+    const img = o.getImageData(0, Math.max(0, Math.floor(ln.y - ln.size * 1.1)), W, Math.ceil(ln.size * 1.5)).data, y0 = Math.max(0, Math.floor(ln.y - ln.size * 1.1)), hh = Math.ceil(ln.size * 1.5);
+    for (let y = 0; y < hh; y += gap) for (let x = 0; x < W; x += gap) if (img[(y * W + x) * 4 + 3] > 128) pts.push({ tx: x, ty: y0 + y, c: li === 2 ? pal[(x * 7 + y) % 4] : (Math.random() < 0.7 ? "#fff1c1" : "#ffd36b") });
+  });
+  const cap = reduce ? 600 : 3200, keep = pts.length > cap ? pts.filter(() => Math.random() < cap / pts.length) : pts;
+  return keep.map(p => { const a = Math.random() * 6.28; return Object.assign(p, { x: apexX, y: apexY, ox: Math.cos(a) * (40 + Math.random() * 160), oy: Math.sin(a) * (40 + Math.random() * 160), delay: Math.random() * 280, dur: 1300 + Math.random() * 500, ph: Math.random() * 6.28 }); });
+}
+function launchRocket() {
+  stage = 4; dimTarget = 0.12; theme.classList.add("dim");
+  rocket = { x: W / 2, y0: H * 0.9, y: H * 0.9, phase: "fuse", t: performance.now() };
+  noiseHit(1.3, "highpass", 4500, 0.2);
+  later(() => { rocket.phase = "fly"; rocket.t = performance.now(); whistle(1.25); }, reduce ? 200 : 1300);
+}
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+function drawRocket(now) {
+  if (!rocket) return;
+  const r = rocket, s = Math.max(5, S * 1.1);
+  // bottle stays on the ground
+  const bx = W / 2, by = H * 0.9;
+  cx.fillStyle = "rgba(160,220,200,.12)"; cx.strokeStyle = "rgba(190,240,225,.45)"; cx.lineWidth = 2;
+  cx.beginPath(); cx.roundRect ? cx.roundRect(bx - s * 2.2, by - s * 1.5, s * 4.4, s * 7, s * 1.2) : cx.rect(bx - s * 2.2, by - s * 1.5, s * 4.4, s * 7); cx.fill(); cx.stroke();
+  cx.fillRect(bx - s * 0.9, by - s * 4.6, s * 1.8, s * 3.2); cx.strokeRect(bx - s * 0.9, by - s * 4.6, s * 1.8, s * 3.2);
+  if (r.phase === "done") return;
+  let y = r.y0;
+  if (r.phase === "fuse") {
+    if (Math.random() < 0.8) sparks(r.x + s * 0.3, r.y0 - s * 3.2 + 6, "#fff1c1", 3, 1.8);
+  } else if (r.phase === "fly") {
+    const k = Math.min(1, (now - r.t) / 1250), e = k * k * (3 - 2 * k);
+    y = r.y0 - (r.y0 - H * 0.24) * e;
+    for (let i = 0; i < 4; i++) parts.push({ x: r.x + (Math.random() - 0.5) * s * 0.6, y: y + s * 1.4, px: r.x, py: y + s * 1.2, vx: (Math.random() - 0.5) * 0.8, vy: 1.5 + Math.random() * 2, c: Math.random() < 0.5 ? "#ffd36b" : "#ff8a3d", life: 26, max: 30, w: 2 });
+    if (k >= 1) { explode(r.x, y); r.phase = "done"; return; }
+  }
+  r.y = y;
+  // stick, body, cone
+  cx.strokeStyle = "#c9a27a"; cx.lineWidth = Math.max(2, s * 0.25); cx.beginPath(); cx.moveTo(r.x + s * 0.55, y - s * 1); cx.lineTo(r.x + s * 0.55, y + s * 6); cx.stroke();
+  cx.fillStyle = "#e2412b"; cx.fillRect(r.x - s * 0.5, y - s * 3, s * 1, s * 3);
+  cx.fillStyle = "#ffb627"; cx.fillRect(r.x - s * 0.5, y - s * 2, s * 1, s * 0.45);
+  cx.fillStyle = "#f7ecd8"; cx.beginPath(); cx.moveTo(r.x - s * 0.55, y - s * 3); cx.lineTo(r.x, y - s * 4.2); cx.lineTo(r.x + s * 0.55, y - s * 3); cx.fill();
+}
+function explode(x, y) {
+  rocketApex.x = x; rocketApex.y = y; boom(); burst(x, y, 160, 8);
+  tparts = sampleText(x, y); textAt = performance.now();
+  [[0.2, 0.25], [0.8, 0.25], [0.12, 0.6], [0.88, 0.6]].forEach(([a, b], i) => setTimeout(() => { burst(W * a, H * b, 90, 5.5); boom(); }, 1500 + i * 280));
+  later(() => { stage = 5; chord(); }, 2200);
+}
+function drawWish(now) {
+  if (!tparts.length) return;
+  const el = now - textAt;
+  fx.globalCompositeOperation = "lighter";
+  for (const p of tparts) {
+    const k = Math.max(0, Math.min(1, (el - p.delay) / p.dur)), e = easeOut(k), wob = Math.sin(k * Math.PI) * (1 - k);
+    p.x = p.x; const x = (W / 2) + 0, sx = rocketApex.x + (p.tx - rocketApex.x) * e + p.ox * wob, sy = rocketApex.y + (p.ty - rocketApex.y) * e + p.oy * wob;
+    const tw = k >= 1 ? 0.35 + 0.35 * Math.sin(now / 180 + p.ph) : 1;
+    fx.globalAlpha = tw * (k >= 1 ? Math.max(0.25, 1 - (el - 2200) / 1400) : 1);
+    fx.fillStyle = p.c; fx.fillRect(sx - 1.2, sy - 1.2, 2.4, 2.4);
+  }
+  fx.globalCompositeOperation = "source-over";
+  const fade = Math.max(0, Math.min(1, (el - 1700) / 900));
+  if (fade > 0) {
+    fx.globalAlpha = fade; fx.textAlign = "center"; fx.textBaseline = "alphabetic";
+    lines.forEach(ln => {
+      fx.font = ln.font;
+      if (ln.col === "grad") { const g = fx.createLinearGradient(W * 0.25, 0, W * 0.75, 0); g.addColorStop(0, "#ffd36b"); g.addColorStop(0.45, "#ffb627"); g.addColorStop(1, "#e2412b"); fx.fillStyle = g; fx.shadowColor = "rgba(255,182,39,.55)"; fx.shadowBlur = 28; }
+      else { fx.fillStyle = ln.col; fx.shadowBlur = 0; }
+      fx.fillText(ln.t, W / 2, ln.y);
+    });
+    fx.shadowBlur = 0; fx.globalAlpha = 1;
+  }
+}
+const rocketApex = { x: 0, y: 0 };
+
 /* ---------- sequence ---------- */
 let stage = 0, timers = [];
 const later = (f, ms) => timers.push(setTimeout(f, ms));
-function showCap(wv) { cap.innerHTML = wv ? `<b style="color:${wv.color}">${wv.year}</b>${wv.who} · ${wv.fuel}` : ""; cap.classList.toggle("on", !!wv); }
 function lightFirst() {
   stage = 1; hint.classList.add("gone"); audio();
   firstDiya.lit = performance.now(); pluck(392, 0.16, 1.6);
@@ -197,7 +303,6 @@ function runRelay() {
   stage = 2; let t = 0;
   WAVES.forEach((wv, w) => {
     const layer = diyas.filter(p => p.w === w), steps = Math.max(...layer.map(p => p.step)) + 1;
-    later(() => showCap(wv), t);
     for (let s = 0; s < steps; s++) {
       later(() => {
         const now = performance.now();
@@ -207,22 +312,25 @@ function runRelay() {
     }
     t += steps * (reduce ? 10 : wv.step) + 380;
   });
-  later(() => { showCap(null); theme.classList.add("show"); chord(); }, t + 100);
+  later(() => { theme.classList.add("show"); chord(); }, t + 100);
   later(() => { boom(); [[-0.95, -0.85], [0.95, -0.85], [-1.1, 0.3], [1.1, 0.3]].forEach(([a, b], i) => setTimeout(() => { burst(CX + a * R * 1.25, CY + b * R, 110); if (i) boom(); }, i * 260)); stage = 3; }, t + 900);
 }
 function celebrate() { [0, 1, 2].forEach(i => setTimeout(() => { burst(W * (0.2 + Math.random() * 0.6), H * (0.15 + Math.random() * 0.3), 140); boom(); }, i * 330)); }
 function reset() {
   timers.forEach(clearTimeout); timers = []; stage = 0; firstDiya.lit = 0; diyas.forEach(p => p.lit = 0); parts.length = 0;
-  theme.classList.remove("show"); showCap(null); hint.classList.remove("gone");
+  theme.classList.remove("show", "dim"); hint.classList.remove("gone"); dim = 1; dimTarget = 1; rocket = null; tparts = [];
 }
-function next() { if (stage === 0) lightFirst(); else if (stage === 1) runRelay(); else if (stage === 3) celebrate(); }
+function next() { if (stage === 0) lightFirst(); else if (stage === 1) runRelay(); else if (stage === 3) launchRocket(); else if (stage === 5) celebrate(); }
 
 /* ---------- loop ---------- */
 function frame(now) {
   cx.clearRect(0, 0, W, H);
+  dim += (dimTarget - dim) * 0.06;
   diyas.forEach(p => drawDiya(p, now));
   if (stage < 2 || firstDiya.lit) drawDiya(firstDiya, now);
+  drawRocket(now);
   drawParts();
+  drawWish(now);
   requestAnimationFrame(frame);
 }
 
