@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Deepavali Theme Reveal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;800&family=Rozha+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: full-screen canvas rangoli of diyas, theme text centred inside it, generation caption at the bottom. Single dark theme. */
+  --night:#0c0811;
+  --paper:#f7ecd8;
+  --muted:#b5a690;
+  --marigold:#ffb627;
+  --kumkum:#e2412b;
+  --display:"Rozha One", Georgia, "Times New Roman", serif;
+  --body:"Mukta", "Segoe UI", "Nirmala UI", system-ui, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:radial-gradient(ellipse 70% 60% at 50% 50%,#1a1122,var(--night) 70%);color:var(--paper);font-family:var(--body);cursor:pointer;user-select:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#fx{pointer-events:none;z-index:5}
+.theme{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;z-index:3;pointer-events:none;width:var(--tw,300px)}
+.theme p{margin:0;opacity:0;transform:translateY(14px) scale(.94);filter:blur(10px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,1.2,.4,1),filter 1s ease}
+.theme .eb{font-size:calc(var(--fs,40px)*.36);letter-spacing:.3em;text-transform:uppercase;color:var(--marigold);margin-bottom:.5em}
+.theme .l1,.theme .l2,.theme .l3{font-family:var(--display);font-size:var(--fs,40px);line-height:1.02}
+.theme .l2,.theme .l3{background:linear-gradient(90deg,#ffd36b,var(--marigold) 40%,var(--kumkum));-webkit-background-clip:text;background-clip:text;color:transparent}
+.theme.show p{opacity:1;transform:none;filter:none}
+.theme.show .l1{transition-delay:.15s}
+.theme.show .l2{transition-delay:.45s}
+.theme.show .l3{transition-delay:.75s}
+.theme.show .l1{text-shadow:0 0 30px rgba(255,182,39,.35)}
+.cap{position:fixed;left:4vw;bottom:5vh;text-align:left;z-index:4;font-size:clamp(1rem,2vw,1.6rem);letter-spacing:.18em;text-transform:uppercase;opacity:0;transition:opacity .35s;pointer-events:none}
+.cap.on{opacity:1}
+.cap b{font-family:var(--display);font-weight:400;letter-spacing:.04em;font-size:1.5em;margin-right:.5em;text-transform:none}
+.hint{position:fixed;right:16px;bottom:12px;z-index:6;font-size:.8rem;color:#5e5068;transition:opacity .4s}
+.hint.gone{opacity:0}
+@media (prefers-reduced-motion:reduce){.theme p{transition-duration:.01s}}
+</style>
+</head>
+<body>
+<canvas id="cv" aria-hidden="true"></canvas>
+<div class="theme" id="theme" role="heading" aria-level="1">
+  <p class="eb">Deepavali 2026</p>
+  <p class="l1">Same Festival,</p>
+  <p class="l2">Different</p>
+  <p class="l3">Generations</p>
+</div>
+<div class="cap" id="cap" aria-live="polite"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="hint" id="hint">Click or Next: light the first diya · R reset · F full screen</div>
+<script>
+(() => {
+"use strict";
+const reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const cv = document.getElementById("cv"), cx = cv.getContext("2d");
+const fxc = document.getElementById("fx"), fx = fxc.getContext("2d");
+const theme = document.getElementById("theme"), cap = document.getElementById("cap"), hint = document.getElementById("hint");
+
+/* ---------- generations (one wave each) ---------- */
+const WAVES = [
+  { color: "#e8b07a", year: "1976", who: "Thatha", fuel: "matchbox", step: 46 },
+  { color: "#ff8a3d", year: "1991", who: "Appa", fuel: "agarbatti", step: 40 },
+  { color: "#ffd04a", year: "2010", who: "Us", fuel: "lighter", step: 46 },
+  { color: "#3ee0c8", year: "2026", who: "Gen Alpha", fuel: "two AAA batteries", step: 58 }
+];
+
+/* ---------- sound ---------- */
+let ac = null, master = null;
+function audio() {
+  if (!ac) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; try { ac = new A(); } catch (e) { return null; } master = ac.createGain(); master.gain.value = 0.8; master.connect(ac.destination); }
+  if (ac.state === "suspended") ac.resume().catch(() => {});
+  return ac;
+}
+function pluck(freq, vol = 0.12, dur = 0.9) {
+  const a = audio(); if (!a) return; const t = a.currentTime;
+  [1, 2.01].forEach((m, i) => {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = i ? "triangle" : "sine"; o.frequency.value = freq * m;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol / (i ? 4 : 1), t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05);
+  });
+}
+function boom() {
+  const a = audio(); if (!a) return; const t = a.currentTime;
+  const len = a.sampleRate * 1.5, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.5);
+  const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+  s.buffer = buf; f.type = "lowpass"; f.frequency.value = 700; g.gain.value = 0.9;
+  s.connect(f); f.connect(g); g.connect(master); s.start(t);
+  const o = a.createOscillator(), og = a.createGain(); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.8);
+  og.gain.setValueAtTime(0.5, t); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.9); o.connect(og); og.connect(master); o.start(t); o.stop(t + 1);
+}
+const SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760, 2093];
+function chord() { [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((f, i) => setTimeout(() => pluck(f, 0.1, 2.2), i * 70)); }
+
+/* ---------- rangoli geometry (unit radius) ---------- */
+function resample(fn, n, closed = true) {
+  const raw = []; const M = 3000;
+  for (let i = 0; i <= M; i++) raw.push(fn(i / M * Math.PI * 2));
+  const L = [0]; for (let i = 1; i < raw.length; i++) L.push(L[i - 1] + Math.hypot(raw[i][0] - raw[i - 1][0], raw[i][1] - raw[i - 1][1]));
+  const total = L[L.length - 1], out = []; let j = 0;
+  for (let k = 0; k < n; k++) { const target = total * k / n; while (L[j + 1] < target) j++; const f = (target - L[j]) / (L[j + 1] - L[j] || 1); out.push([raw[j][0] + (raw[j + 1][0] - raw[j][0]) * f, raw[j][1] + (raw[j + 1][1] - raw[j][1]) * f]); }
+  return out;
+}
+const polar = r => th => [Math.cos(th) * r(th), Math.sin(th) * r(th)];
+const LAYERS = [
+  resample(polar(() => 1.12), 64),                                                                       // outer pulli ring
+  resample(polar(th => 0.68 + 0.36 * Math.pow(Math.abs(Math.cos(4 * th + Math.PI / 2 * 0)), 0.7)), 88),  // 8 big lotus petals
+  resample(polar(th => 0.5 + 0.13 * Math.pow(Math.abs(Math.cos(4 * th + Math.PI / 2)), 0.8)), 56),      // 8 inner petals, offset
+  resample(polar(() => 0.44), 40)                                                                        // ring around the theme
+];
+// lighting order: start at the bottom, race up both sides, meet at the top
+const diyas = [];
+LAYERS.forEach((pts, w) => {
+  const withD = pts.map(([x, y]) => { const a = Math.atan2(y, x); let d = Math.abs(a - Math.PI / 2); if (d > Math.PI) d = 2 * Math.PI - d; return { ux: x, uy: y, w, d }; });
+  withD.sort((a, b) => a.d - b.d);
+  withD.forEach((p, i) => { p.step = Math.floor(i / 2); p.lit = 0; p.ph = Math.random() * 6.28; diyas.push(p); });
+});
+const firstDiya = { ux: 0, uy: 1.3, w: 0, step: 0, lit: 0, ph: 1, solo: true };
+
+/* ---------- layout ---------- */
+let W = 0, H = 0, R = 100, CX = 0, CY = 0, S = 6, dpr = 1;
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
+  [cv, fxc].forEach(c => { c.width = W * dpr; c.height = H * dpr; });
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0); fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  R = Math.min(W * 0.36, H * 0.37); CX = W / 2; CY = H * 0.47; S = Math.max(4, R * 0.034);
+  theme.style.top = CY + "px";
+  const tw = R * 0.84; theme.style.setProperty("--tw", tw + "px"); theme.style.setProperty("--fs", Math.max(16, tw * 0.155) + "px");
+  makeSprites();
+}
+
+/* ---------- sprites ---------- */
+let sprites = {};
+function makeSprites() {
+  sprites = {};
+  WAVES.forEach(wv => {
+    const s = Math.ceil(S * 9), c = document.createElement("canvas"); c.width = c.height = s * dpr; const g = c.getContext("2d"); g.scale(dpr, dpr);
+    const glow = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    glow.addColorStop(0, wv.color + "aa"); glow.addColorStop(0.35, wv.color + "33"); glow.addColorStop(1, wv.color + "00");
+    g.fillStyle = glow; g.fillRect(0, 0, s, s);
+    sprites[wv.color] = { c, s };
+  });
+}
+function drawDiya(p, now) {
+  const x = CX + p.ux * R, y = CY + p.uy * R;
+  // bowl
+  cx.fillStyle = p.lit ? "#a34a22" : "rgba(120,96,130,.28)";
+  cx.beginPath(); cx.ellipse(x, y, S * 1.25, S * 0.62, 0, 0, Math.PI); cx.closePath(); cx.fill();
+  if (!p.lit) return;
+  const col = WAVES[p.w].color;
+  const age = (now - p.lit) / 320, k = age >= 1 ? 1 : 1 + 0.6 * Math.sin(age * Math.PI) ; // ignite overshoot
+  const grow = Math.min(1, age * 1.6);
+  const fl = 1 + 0.09 * Math.sin(now / 140 + p.ph) + 0.05 * Math.sin(now / 67 + p.ph * 2);
+  const sp = sprites[col]; if (sp) { cx.globalCompositeOperation = "lighter"; cx.globalAlpha = 0.9 * grow; cx.drawImage(sp.c, x - sp.s / 2, y - S * 1.2 - sp.s / 2, sp.s, sp.s); cx.globalAlpha = 1; cx.globalCompositeOperation = "source-over"; }
+  const h = S * 2.3 * k * fl * grow, wd = S * 0.75 * grow;
+  const fy = y - S * 0.25;
+  const gr = cx.createLinearGradient(x, fy, x, fy - h);
+  gr.addColorStop(0, "#ffffff"); gr.addColorStop(0.35, "#fff3b0"); gr.addColorStop(0.7, col); gr.addColorStop(1, col + "00");
+  cx.fillStyle = gr;
+  cx.beginPath(); cx.moveTo(x, fy - h);
+  cx.quadraticCurveTo(x + wd * 1.4, fy - h * 0.35, x, fy);
+  cx.quadraticCurveTo(x - wd * 1.4, fy - h * 0.35, x, fy - h);
+  cx.fill();
+}
+
+/* ---------- sparks / fireworks ---------- */
+const parts = [];
+function sparks(x, y, col, n = 7, sp = 2.2) { for (let i = 0; i < (reduce ? 2 : n); i++) { const a = Math.random() * 6.28, s = sp * (0.4 + Math.random()); parts.push({ x, y, px: x, py: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, c: col, life: 22 + Math.random() * 18, max: 40, w: 1.4 }); } }
+function burst(x, y, n = 120, sp = 6.5) { const pal = WAVES.map(w => w.color).concat(["#fff1c1"]); for (let i = 0; i < (reduce ? n / 4 : n); i++) { const a = Math.random() * 6.28, s = sp * (0.3 + Math.random() * 0.8); parts.push({ x, y, px: x, py: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, c: pal[i % pal.length], life: 55 + Math.random() * 45, max: 100, w: 1.8 + Math.random() * 1.4 }); } }
+function drawParts() {
+  fx.clearRect(0, 0, W, H); fx.globalCompositeOperation = "lighter"; fx.lineCap = "round";
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.px = p.x; p.py = p.y; p.vx *= 0.975; p.vy = p.vy * 0.975 + 0.05; p.x += p.vx; p.y += p.vy; p.life--;
+    if (p.life <= 0) { parts[i] = parts[parts.length - 1]; parts.pop(); continue; }
+    fx.globalAlpha = Math.min(1, p.life / p.max * 1.6); fx.strokeStyle = p.c; fx.lineWidth = p.w; fx.beginPath(); fx.moveTo(p.px, p.py); fx.lineTo(p.x + 0.01, p.y); fx.stroke();
+  }
+  fx.globalAlpha = 1; fx.globalCompositeOperation = "source-over";
+}
+
+/* ---------- sequence ---------- */
+let stage = 0, timers = [];
+const later = (f, ms) => timers.push(setTimeout(f, ms));
+function showCap(wv) { cap.innerHTML = wv ? `<b style="color:${wv.color}">${wv.year}</b>${wv.who} · ${wv.fuel}` : ""; cap.classList.toggle("on", !!wv); }
+function lightFirst() {
+  stage = 1; hint.classList.add("gone"); audio();
+  firstDiya.lit = performance.now(); pluck(392, 0.16, 1.6);
+  const x = CX + firstDiya.ux * R, y = CY + firstDiya.uy * R; sparks(x, y - S, "#fff1c1", 16, 2.6);
+}
+function runRelay() {
+  stage = 2; let t = 0;
+  WAVES.forEach((wv, w) => {
+    const layer = diyas.filter(p => p.w === w), steps = Math.max(...layer.map(p => p.step)) + 1;
+    later(() => showCap(wv), t);
+    for (let s = 0; s < steps; s++) {
+      later(() => {
+        const now = performance.now();
+        layer.filter(p => p.step === s).forEach(p => { p.lit = now; sparks(CX + p.ux * R, CY + p.uy * R - S, wv.color); });
+        pluck(SCALE[Math.min(SCALE.length - 1, Math.floor(s / steps * 7) + (w > 1 ? 3 : w))] , 0.05, 0.5);
+      }, t + s * (reduce ? 10 : wv.step));
+    }
+    t += steps * (reduce ? 10 : wv.step) + 380;
+  });
+  later(() => { showCap(null); theme.classList.add("show"); chord(); }, t + 100);
+  later(() => { boom(); [[-0.95, -0.85], [0.95, -0.85], [-1.1, 0.3], [1.1, 0.3]].forEach(([a, b], i) => setTimeout(() => { burst(CX + a * R * 1.25, CY + b * R, 110); if (i) boom(); }, i * 260)); stage = 3; }, t + 900);
+}
+function celebrate() { [0, 1, 2].forEach(i => setTimeout(() => { burst(W * (0.2 + Math.random() * 0.6), H * (0.15 + Math.random() * 0.3), 140); boom(); }, i * 330)); }
+function reset() {
+  timers.forEach(clearTimeout); timers = []; stage = 0; firstDiya.lit = 0; diyas.forEach(p => p.lit = 0); parts.length = 0;
+  theme.classList.remove("show"); showCap(null); hint.classList.remove("gone");
+}
+function next() { if (stage === 0) lightFirst(); else if (stage === 1) runRelay(); else if (stage === 3) celebrate(); }
+
+/* ---------- loop ---------- */
+function frame(now) {
+  cx.clearRect(0, 0, W, H);
+  diyas.forEach(p => drawDiya(p, now));
+  if (stage < 2 || firstDiya.lit) drawDiya(firstDiya, now);
+  drawParts();
+  requestAnimationFrame(frame);
+}
+
+/* ---------- controls ---------- */
+document.addEventListener("click", next);
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (["ArrowRight", "PageDown", "Enter", " "].includes(k)) next();
+  else if (k === "r" || k === "R" || k === "ArrowLeft" || k === "PageUp") reset();
+  else if (k === "f" || k === "F") { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (er) { /* not allowed */ } }
+  else return;
+  e.preventDefault();
+});
+addEventListener("resize", resize);
+resize();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
