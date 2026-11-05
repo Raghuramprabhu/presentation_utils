@@ -123,29 +123,37 @@ h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.05;text-
 .toast button{background:var(--night);color:var(--paper);border:0;border-radius:999px;padding:4px 12px}
 
 /* ================= PARTICIPANT ================= */
-#participant{min-height:100%;max-width:480px;margin:0 auto;padding:20px 18px 40px;display:flex;flex-direction:column;gap:18px}
-.mhead{display:flex;align-items:center;gap:12px;padding-top:10px}
-.mhead .diya{margin-top:10px}
-.mhead b{display:block;font-family:var(--display);font-weight:400;font-size:1.4rem;line-height:1}
-.mhead span{color:var(--muted);font-size:.88rem}
-.steps{list-style:none;margin:0;padding:0;display:flex;gap:10px;align-items:flex-end}
-.steps li{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;flex:1;padding-top:14px}
-.steps li[aria-current="step"]{color:var(--paper)}
-.mcard{background:linear-gradient(180deg,#241932,#1a1224);border:1px solid var(--line);border-radius:20px;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
-.mcard h2{font-size:1.9rem}
-.mcard p{margin:0}
-.mcard .hint{color:var(--muted);font-size:.95rem}
-.mcard input{width:100%;background:#120c1a;border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-size:1.3rem}
-.mcard input:focus{border-color:var(--marigold);outline:none}
-.mcard .big{width:100%;padding:15px;font-size:1.15rem;border-radius:14px}
-.mcard .sub{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem}
-.sent{display:flex;flex-wrap:wrap;gap:8px}
-.sent span{background:rgba(255,182,39,.14);border:1px solid rgba(255,182,39,.45);color:var(--marigold);border-radius:999px;padding:4px 14px;font-weight:800}
-.lit-msg{font-family:var(--display);font-size:2.2rem;line-height:1.05}
-.lit-msg em{font-style:normal;color:var(--marigold)}
-.mcard .diya.hero{transform:scale(2);margin:26px auto 14px}
-.mstatus{min-height:1.4em;margin:0;color:var(--muted);font-size:.95rem;text-align:center}
-.mstatus.warn{color:var(--marigold)}
+body.is-phone{overflow:hidden;background:radial-gradient(ellipse 120% 70% at 50% 110%,rgba(255,140,40,.28),transparent 60%),linear-gradient(#07050c,#140c1d 60%,#1d1027)}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+#participant{position:fixed;inset:0;max-width:520px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 20px max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;z-index:2}
+.mtop{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mtop b{color:var(--marigold);font-weight:800}
+.mq{margin-top:auto;font-family:var(--display);font-weight:400;font-size:clamp(2rem,9vw,2.7rem);line-height:1.05;text-wrap:balance}
+.mq em{font-style:normal;background:linear-gradient(90deg,#ffd36b,var(--marigold) 45%,var(--kumkum));-webkit-background-clip:text;background-clip:text;color:transparent}
+.mform{display:flex;flex-direction:column;gap:12px}
+.mfield{position:relative}
+.mfield input{width:100%;background:rgba(18,12,26,.85);border:2px solid var(--line);border-radius:18px;padding:18px 64px 18px 18px;font-size:1.4rem;color:var(--paper);transition:border-color .2s,box-shadow .2s}
+.mfield input:focus{outline:none;border-color:var(--marigold);box-shadow:0 0 0 6px rgba(255,182,39,.15),0 0 40px rgba(255,182,39,.2)}
+.mfield .cnt{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:.8rem;color:#6e5f80;font-variant-numeric:tabular-nums}
+.launch{position:relative;overflow:hidden;width:100%;border:0;border-radius:18px;padding:18px;font-size:1.25rem;font-weight:800;color:#1b1206;background:linear-gradient(90deg,#ffd36b,var(--marigold) 50%,#ff8a3d);box-shadow:0 10px 30px rgba(255,140,40,.35);transition:transform .12s}
+.launch:active{transform:scale(.97)}
+.launch:disabled{filter:grayscale(.6) brightness(.7)}
+.launch::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:shine 2.6s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-60%}100%{left:130%}}
+.mmsg{min-height:1.6em;margin:0;text-align:center;font-family:var(--display);font-size:1.5rem;color:var(--marigold);opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+.mmsg.on{opacity:1;transform:none}
+.mmsg.warn{font-family:var(--body);font-size:.95rem;color:var(--muted)}
+.mwords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:34px}
+.mwords span{background:rgba(255,182,39,.12);border:1px solid rgba(255,182,39,.45);color:var(--marigold);border-radius:999px;padding:4px 14px;font-weight:800;animation:chipin .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes chipin{from{scale:.3;opacity:0}to{scale:1;opacity:1}}
+.mlamps{display:flex;justify-content:center;gap:18px;padding:8px 0 4px}
+.mlamps .diya{transform:scale(1.25)}
+.mlamps .diya.lit-now{animation:lampin .8s cubic-bezier(.2,1.6,.4,1)}
+@keyframes lampin{from{transform:scale(.6)}to{transform:scale(1.25)}}
+.mfoot{text-align:center;color:var(--muted);font-size:.85rem;margin:0}
+.flyer{position:fixed;z-index:5;font-family:var(--display);font-size:1.6rem;color:#fff1c1;text-shadow:0 0 18px rgba(255,182,39,.9);pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%)}
+.mdone{margin-top:auto;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+.mdone h2{font-size:2.4rem}
 .shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 
@@ -237,14 +245,10 @@ h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.05;text-
 </div>
 
 <!-- ================= PARTICIPANT ================= -->
+<canvas id="sky" aria-hidden="true" hidden></canvas>
 <div id="participant" hidden>
-  <header class="mhead">
-    <span class="diya" aria-hidden="true"></span>
-    <div><b>Deepavali</b><span>Lennox India Toastmasters · Same festival, different generations</span></div>
-  </header>
-  <ol class="steps" id="steps" aria-label="Your answers"></ol>
-  <section class="mcard" id="mcard" aria-live="polite"></section>
-  <p class="mstatus" id="mstatus" aria-live="polite"></p>
+  <div class="mtop"><span>Lennox India Toastmasters</span><b>Diwali 2026</b></div>
+  <div id="mbody" style="display:contents"></div>
 </div>
 
 <canvas id="fx" aria-hidden="true"></canvas>
@@ -2574,7 +2578,7 @@ function rand(n) {
 function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 
 const QUESTIONS = [
-  { q: 1, tab: "Then", title: "Deepavali when you were a kid, in one word", phone: "Deepavali when you were a kid, in one word?",
+  { q: 1, tab: "Diwali", title: "What comes to mind when you think of Diwali?", phone: "What comes to mind when you think of Diwali?",
     colors: ["#e8b07a", "#f4cf8c", "#e8945a", "#fff1c1", "#d98a5f", "#ffcf6b"] },
   { q: 2, tab: "Now", title: "Deepavali today, in one word", phone: "Deepavali today, in one word?",
     colors: ["#3ee0c8", "#8cc4ff", "#ff6f9a", "#c3a2ff", "#f7ecd8", "#7ee36b"] },
@@ -2582,7 +2586,7 @@ const QUESTIONS = [
     colors: ["#ffb627", "#ff7a45", "#fff1c1", "#ffd36b", "#ff5c5c", "#f7ecd8"] }
 ];
 const SAMPLE = {
-  1: ["crackers", "oil bath", "new dress", "Paati", "sweets", "bijili", "cousins", "crackers", "legiyam", "4 AM", "rocket", "crackers", "Doordarshan", "new dress", "adhirasam", "Thalaivar movie", "sweets", "kolam", "oil bath", "joy"],
+  1: ["family", "crackers", "lights", "sweets", "family", "oil bath", "new dress", "Paati", "sweets", "bijili", "cousins", "crackers", "legiyam", "4 AM", "rocket", "crackers", "Doordarshan", "new dress", "adhirasam", "Thalaivar movie", "sweets", "kolam", "oil bath", "joy"],
   2: ["WhatsApp", "traffic", "holiday", "Instamart", "OTT", "green crackers", "sleep", "WhatsApp", "biryani", "pollution", "family call", "reels", "holiday", "AQI", "Swiggy", "sleep", "WhatsApp", "shopping"],
   3: ["Amma", "Paati", "Appa", "Thatha", "Amma", "Periyamma", "Athai", "Amma", "Mama", "Paati", "Chithi", "Appa", "Amma", "best friend", "Thatha"]
 };
@@ -2709,7 +2713,7 @@ function presenter() {
   $("#presenter").hidden = false;
   let topic = store.get("dc-topic", null);
   if (!topic || !/^[A-Za-z0-9_-]{6,64}$/.test(topic)) { topic = "dpv-" + rand(12); store.set("dc-topic", topic); }
-  let ui = store.get("dc-ui", { q: 1, view: "single" });
+  let ui = { q: 1, view: "single" };
   let hidden = store.get("dc-hidden", { 1: [], 2: [], 3: [] });
   let cut = store.get("dc-cut", { 1: 0, 2: 0, 3: 0 });
   let local = store.get("dc-local", []);
@@ -2749,8 +2753,8 @@ function presenter() {
     $("#sessionInfo").textContent = "Session code: " + topic + (isWeb ? "" : " · Opened as a file, so the QR uses the address above.");
   }
   function renderTabs() {
-    const tabs = QUESTIONS.map(Q => `<button type="button" data-q="${Q.q}" aria-current="${ui.view === "single" && ui.q === Q.q}"><b>${Q.q}</b>${Q.tab}</button>`).join("")
-      + `<button type="button" data-q="c" aria-current="${ui.view === "compare"}"><b>C</b>Then vs Now</button>`;
+    const tabs = QUESTIONS.slice(0, 1).map(Q => `<button type="button" data-q="${Q.q}" aria-current="${ui.view === "single" && ui.q === Q.q}"><b>${Q.q}</b>${Q.tab}</button>`).join("")
+;
     $("#qtabs").innerHTML = tabs;
     $$("#qtabs button").forEach(b => b.addEventListener("click", () => b.dataset.q === "c" ? setView("compare") : setQ(+b.dataset.q)));
   }
@@ -2765,7 +2769,7 @@ function presenter() {
     if (ui.view === "single") {
       const Q = QUESTIONS[ui.q - 1], items = aggregate(ui.q);
       const count = items.reduce((a, b) => a + b.count, 0);
-      $("#qEyebrow").textContent = `Question ${ui.q} of 3 · ${count} ${count === 1 ? "word" : "words"}`;
+      $("#qEyebrow").textContent = `Diwali 2026 · ${count} ${count === 1 ? "word" : "words"}`;
       $("#qTitle").textContent = Q.title;
       $("#emptyMain").hidden = items.length > 0;
       drawCloud($("#cloudMain"), items, Q.colors, allowFx);
@@ -2900,8 +2904,7 @@ function presenter() {
     if (e.key === "Escape") { closeOv(); return; }
     if (/^(INPUT|TEXTAREA)$/.test(tag) || e.metaKey || e.ctrlKey || e.altKey) return;
     const k = e.key.toLowerCase();
-    if (k === "1" || k === "2" || k === "3") setQ(+k);
-    else if (k === "c") setView("compare");
+    if (k === "1") setQ(1);
     else if (k === "j") { $("#ovQR").hidden ? openOv("#ovQR") : closeOv(); }
     else if (k === "a") openOv("#ovAdd");
     else if (k === "d") demo();
@@ -2918,71 +2921,74 @@ function presenter() {
 
 /* ================= PARTICIPANT ================= */
 function participant(topic) {
-  $("#participant").hidden = false;
+  document.body.classList.add("is-phone");
+  $("#participant").hidden = false; $("#sky").hidden = false;
   let dev = store.get("dc-dev", null);
   if (!dev) { dev = rand(8); store.set("dc-dev", dev); }
-  const KEY = "dc-p-" + topic;
-  let st = store.get(KEY, { step: 0, sent: { 1: [], 2: [], 3: [] } });
+  const KEY = "dc-p1-" + topic, MAX = 5;
+  let sent = store.get(KEY, []);
+  if (!Array.isArray(sent)) sent = [];
   let busy = false;
-  const status = (msg, warn) => { const el = $("#mstatus"); el.textContent = msg || ""; el.classList.toggle("warn", !!warn); };
+  const CHEERS = ["Lit! Look at the big screen.", "Boom! Your word is up there.", "Another diya glowing.", "Sivakasi standard!", "Five diyas. Full rangoli."];
 
-  function renderSteps() {
-    $("#steps").innerHTML = QUESTIONS.map((Q, i) => `<li${i === st.step ? ' aria-current="step"' : ""}><span class="diya${st.sent[Q.q].length ? "" : " off"}"></span>${Q.tab}</li>`).join("");
-  }
-  function render(justLit) {
-    renderSteps();
-    const card = $("#mcard");
-    if (st.step >= QUESTIONS.length) {
-      card.innerHTML = `<span class="diya hero${justLit ? " lit-now" : ""}"></span><p class="lit-msg">All three diyas are lit. <em>Happy Deepavali!</em></p><p class="hint">Look up at the screen. You helped make it.</p><button type="button" class="btn big" id="pBack">Change an answer</button>`;
-      $("#pBack").addEventListener("click", () => { st.step = 0; save(); render(); });
+  // twinkling sky
+  const sky = $("#sky"), sc = sky.getContext("2d"); let stars = [];
+  function sizeSky() { const d = Math.min(devicePixelRatio || 1, 2); sky.width = innerWidth * d; sky.height = innerHeight * d; sc.setTransform(d, 0, 0, d, 0, 0); stars = Array.from({ length: 70 }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight * 0.7, r: Math.random() * 1.4 + 0.3, p: Math.random() * 6.28, s: 0.5 + Math.random() * 1.5 })); }
+  sizeSky(); addEventListener("resize", sizeSky);
+  (function tw(t) { sc.clearRect(0, 0, innerWidth, innerHeight); for (const st of stars) { sc.globalAlpha = reduceMotion ? 0.5 : 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(t / 700 * st.s + st.p)); sc.fillStyle = "#fff1c1"; sc.beginPath(); sc.arc(st.x, st.y, st.r, 0, 6.28); sc.fill(); } sc.globalAlpha = 1; requestAnimationFrame(tw); })(0);
+
+  const body = $("#mbody");
+  function lamps(justIdx) { let h = ""; for (let i = 0; i < MAX; i++) h += `<span class="diya${i < sent.length ? (i === justIdx ? " lit-now" : "") : " off"}"></span>`; return `<div class="mlamps" aria-label="${sent.length} of ${MAX} diyas lit">${h}</div>`; }
+  function chips() { return `<div class="mwords">${sent.map(w => `<span>${esc(w)}</span>`).join("")}</div>`; }
+  function render(justIdx = -1, msg = "") {
+    if (sent.length >= MAX) {
+      body.innerHTML = `<div class="mdone"><h2>All five diyas lit.</h2><p class="mq" style="margin:0;font-size:2rem"><em>Happy Diwali!</em></p><p class="mfoot">Look up. Your words are on the big screen.</p></div>${chips()}${lamps(justIdx)}`;
       return;
     }
-    const Q = QUESTIONS[st.step], sent = st.sent[Q.q];
-    if (!sent.length) {
-      card.innerHTML = `<p class="eyebrow">Question ${Q.q} of 3</p><h2>${esc(Q.phone)}</h2>
-        <form id="pForm" autocomplete="off"><input id="pInput" maxlength="28" enterkeyhint="send" placeholder="Type one or two words" aria-label="Your answer"></form>
-        <div class="sub"><span>Answer what's on the big screen.</span><span id="pCount">0/28</span></div>
-        <button type="submit" form="pForm" class="btn primary big" id="pSend">Light my diya</button>`;
-      const inp = $("#pInput");
-      inp.addEventListener("input", () => { $("#pCount").textContent = `${inp.value.length}/28`; });
-      $("#pForm").addEventListener("submit", e => { e.preventDefault(); submit(Q.q, inp.value); });
-    } else {
-      const next = st.step < QUESTIONS.length - 1 ? "Next question" : "Finish";
-      card.innerHTML = `<span class="diya hero${justLit ? " lit-now" : ""}"></span><p class="lit-msg">Lit! <em>Look at the screen.</em></p>
-        <div class="sent">${sent.map(w => `<span>${esc(w)}</span>`).join("")}</div>
-        ${sent.length < 2 ? '<button type="button" class="btn big" id="pMore">Add one more word</button>' : ""}
-        <button type="button" class="btn primary big" id="pNext">${next}</button>
-        <p class="hint">${st.step < QUESTIONS.length - 1 ? "Answer the next one when it appears on the big screen." : ""}</p>`;
-      const more = $("#pMore");
-      if (more) more.addEventListener("click", () => {
-        card.innerHTML = `<p class="eyebrow">Question ${Q.q} of 3 · one more</p><h2>${esc(Q.phone)}</h2>
-          <form id="pForm" autocomplete="off"><input id="pInput" maxlength="28" enterkeyhint="send" placeholder="Another word" aria-label="Your answer"></form>
-          <button type="submit" form="pForm" class="btn primary big">Send</button>`;
-        $("#pForm").addEventListener("submit", e => { e.preventDefault(); submit(Q.q, $("#pInput").value); });
-        $("#pInput").focus();
-      });
-      $("#pNext").addEventListener("click", () => { st.step++; save(); render(); });
-    }
+    body.innerHTML = `<h1 class="mq">What comes to mind when you think of <em>Diwali?</em></h1>
+      <form class="mform" id="mform" autocomplete="off">
+        <div class="mfield"><input id="minput" maxlength="28" enterkeyhint="send" placeholder="Type a word" aria-label="Your word"><span class="cnt" id="mcnt">0/28</span></div>
+        <button type="submit" class="launch" id="mbtn">${sent.length ? "Launch another" : "Launch it"}</button>
+      </form>
+      <p class="mmsg${msg ? " on" : ""}" id="mmsg" aria-live="polite">${esc(msg)}</p>
+      ${chips()}${lamps(justIdx)}
+      <p class="mfoot">${sent.length ? `${sent.length} of ${MAX} diyas lit · one word at a time` : "Every word lights a diya, here and on the big screen."}</p>`;
+    const inp = $("#minput");
+    inp.addEventListener("input", () => { $("#mcnt").textContent = `${inp.value.length}/28`; });
+    $("#mform").addEventListener("submit", e => { e.preventDefault(); submit(inp.value); });
   }
-  function save() { store.set(KEY, st); }
-  async function submit(q, raw) {
+  function say(msg, warn) { const m = $("#mmsg"); if (!m) return; m.textContent = msg; m.classList.toggle("warn", !!warn); m.classList.toggle("on", !!msg); }
+  function fly(word, from) {
+    const el = document.createElement("div"); el.className = "flyer"; el.textContent = word; document.body.appendChild(el);
+    const x0 = from.left + from.width / 2, y0 = from.top + from.height / 2, y1 = innerHeight * 0.12, t0 = performance.now(), dur = reduceMotion ? 200 : 900;
+    return new Promise(res => (function step(now) {
+      const k = Math.min(1, (now - t0) / dur), e = k * k;
+      const y = y0 + (y1 - y0) * e, sc2 = 1 - 0.35 * k;
+      el.style.left = x0 + "px"; el.style.top = y + "px"; el.style.transform = `translate(-50%,-50%) scale(${sc2})`;
+      if (k < 1) { FX.burst(x0 + (Math.random() - 0.5) * 10, y + 16, { n: 2, speed: 1.2, colors: ["#ffd36b", "#ff8a3d"] }); requestAnimationFrame(step); }
+      else { el.remove(); res([x0, y1]); }
+    })(t0));
+  }
+  async function submit(raw) {
     if (busy) return;
     const w = clean(raw);
-    if (!w || !keyOf(w)) { const c = $("#mcard"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake"); status("Type a word first."); return; }
+    if (!w || !keyOf(w)) { const f = $(".mfield"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake"); say("Type a word first.", true); return; }
     busy = true;
-    const btn = $("#mcard .primary"); if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
-    status("");
-    const ok = await publish({ v: 1, q, w, d: dev });
+    const btn = $("#mbtn"), inp = $("#minput"); btn.disabled = true; btn.textContent = "Launching…";
+    const box = inp.getBoundingClientRect();
+    const sending = publish({ v: 1, q: 1, w, d: dev });
+    const flying = fly(w, box);
+    inp.value = "";
+    const [ok, pos] = await Promise.all([sending, flying]);
     busy = false;
     if (ok) {
-      st.sent[q].push(w); save(); status("");
-      try { if (navigator.vibrate) navigator.vibrate([18, 40, 18]); } catch (e) { /* ignore */ }
-      render(true);
-      const r = $("#mcard .diya.hero"); const b = r ? r.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 3, width: 0, height: 0 };
-      FX.burst(b.left + b.width / 2, b.top, { n: 70, speed: 4.5 });
+      FX.burst(pos[0], pos[1], { n: 90, speed: 5.5 });
+      setTimeout(() => FX.burst(pos[0] + (Math.random() - 0.5) * 140, pos[1] + 40, { n: 50, speed: 4 }), 180);
+      try { if (navigator.vibrate) navigator.vibrate([20, 40, 30]); } catch (e) { /* ignore */ }
+      sent.push(w); store.set(KEY, sent);
+      render(sent.length - 1, CHEERS[Math.min(sent.length, CHEERS.length) - 1]);
     } else {
-      if (btn) { btn.disabled = false; btn.textContent = "Try again"; }
-      status("Couldn't reach the screen. Check your internet and try again.", true);
+      render(-1); $("#minput").value = w; say("Couldn't reach the screen. Check your mobile data and try again.", true);
     }
   }
   async function publish(payload) {
@@ -2990,9 +2996,9 @@ function participant(topic) {
       try {
         const r = await fetch(`${RELAY}/${encodeURIComponent(topic)}`, { method: "POST", body: JSON.stringify(payload) });
         if (r.ok) return true;
-        if (r.status === 429) { status("Lots of people are answering. Retrying in a few seconds…", true); await sleep(5000 + Math.random() * 6000); continue; }
-        status("Retrying…", true); await sleep(2000);
-      } catch (e) { status("No connection. Retrying…", true); await sleep(2500); }
+        if (r.status === 429) { say("So many words flying! Retrying…", true); await sleep(5000 + Math.random() * 6000); continue; }
+        await sleep(2000);
+      } catch (e) { say("No connection. Retrying…", true); await sleep(2500); }
     }
     return false;
   }
