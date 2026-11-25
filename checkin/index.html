@@ -46,17 +46,18 @@ h1,h2,h3,p{margin:0}
 .textbtn{background:none;border:0;padding:4px 0;color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
 
 /* ================= PROJECTOR ================= */
-#presenter{min-height:100vh}
-.show{min-height:100vh;display:grid;grid-template-columns:minmax(300px,40%) 1fr;grid-template-rows:auto 1fr;column-gap:clamp(24px,4vw,72px);padding:clamp(18px,3.2vh,40px) clamp(20px,3.6vw,64px) clamp(18px,3vh,36px)}
-.mast{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:clamp(14px,2.4vh,28px);margin-bottom:clamp(18px,3vh,36px);border-bottom:6px solid var(--red)}
-.mast h1{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(2.6rem,6.4vw,6.6rem);line-height:.92;letter-spacing:-.01em;color:var(--red);cursor:default;user-select:none}
+#presenter{min-height:100vh;display:flex;flex-direction:column}
+.mast{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:clamp(16px,3vh,36px) clamp(20px,3.6vw,64px) 0;padding-bottom:clamp(12px,2vh,24px);border-bottom:6px solid var(--red)}
+.stage{flex:1;min-height:0;padding:clamp(16px,3vh,36px) clamp(20px,3.6vw,64px) clamp(16px,3vh,32px)}
+.show{display:grid;grid-template-columns:minmax(300px,40%) 1fr;column-gap:clamp(24px,4vw,72px);align-items:start}
+.mast h1{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(2.4rem,5.6vw,5.8rem);line-height:.92;letter-spacing:-.01em;color:var(--red);cursor:default;user-select:none}
 .mast .net{font-weight:700;color:var(--red);display:flex;align-items:center;gap:8px;white-space:nowrap}
 .mast .net::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--red);animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.2}}
 
 /* the vent */
 .intake{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
-.vent{position:relative;width:min(100%,62vh);aspect-ratio:1;padding:clamp(14px,2.2vh,22px);border-radius:10px;
+.vent{position:relative;width:min(100%,56vh);aspect-ratio:1;padding:clamp(14px,2.2vh,22px);border-radius:10px;
   background:
     radial-gradient(circle at 11px 11px,#8e96a0 0 3px,#f4f6f8 3.5px 4.5px,transparent 5px),
     radial-gradient(circle at calc(100% - 11px) 11px,#8e96a0 0 3px,#f4f6f8 3.5px 4.5px,transparent 5px),
@@ -95,6 +96,65 @@ h1,h2,h3,p{margin:0}
 .zone .zc{font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(.95rem,1.2vw,1.2rem);color:var(--duct)}
 .zone.full .zc{color:var(--red)}
 .room .empty{color:var(--duct);font-size:1.2rem;padding:18px 0}
+.joinnote{color:var(--duct);font-size:clamp(1rem,1.4vw,1.35rem);max-width:34ch}
+
+/* first question: cloud, light-up, gust */
+.qstage{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;gap:clamp(10px,2vh,22px) clamp(20px,3vw,48px)}
+.qtext{font-weight:800;font-size:clamp(1.6rem,3.1vw,3.2rem);line-height:1.1;max-width:30ch;margin:0}
+.qstage .qtext{grid-column:1;grid-row:1}
+.corner{grid-column:2;grid-row:1;display:flex;align-items:center;gap:14px;color:var(--duct);font-size:clamp(.9rem,1.2vw,1.2rem)}
+.corner b{color:var(--graphite);font-size:1.6em;font-weight:900;font-variant-numeric:tabular-nums}
+.corner .qr{width:clamp(84px,8.5vw,130px);height:clamp(84px,8.5vw,130px);border:1px solid var(--steel);border-radius:4px;overflow:hidden}
+.corner .qr svg{display:block;width:100%;height:100%}
+.cloudwrap{grid-column:1/-1;grid-row:2;position:relative;min-height:46vh;overflow:hidden}
+.cloud{position:absolute;inset:0}
+.cloud .w{position:absolute;left:50%;top:50%;font-family:inherit;font-weight:800;color:var(--graphite);background:none;border:0;padding:0 .12em;white-space:nowrap;line-height:1;cursor:default;transition:color .45s,opacity .45s,transform .7s cubic-bezier(.2,.8,.2,1),font-size .7s}
+.cloud .w.top{font-weight:900;font-stretch:118%;font-variation-settings:"wdth" 118}
+.cloud.lit .w{cursor:pointer}
+.cloud.lit .w.right{color:var(--red)}
+.cloud.lit .w.joke{color:#b8bec6}
+.cloud .w.new{animation:wnew .9s ease-out}
+@keyframes wnew{0%{color:var(--red);opacity:0;filter:blur(6px)}35%{color:var(--red);opacity:1;filter:none}100%{}}
+.cloud .w.chosen{color:var(--red);text-shadow:0 0 18px rgba(214,0,28,.35)}
+.cloud-empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--duct);font-size:clamp(1.1rem,1.6vw,1.5rem);margin:0}
+.streaks{position:absolute;inset:0;pointer-events:none}
+.streaks i{position:absolute;right:-40%;height:3px;width:40%;border-radius:2px;background:linear-gradient(90deg,rgba(199,204,211,0),#c7ccd3 60%,rgba(199,204,211,0))}
+.twist{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
+.tw-big{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(4rem,13vw,13rem);line-height:.9;color:var(--red);margin:0}
+.tw-small{font-size:clamp(1rem,1.8vw,1.7rem);color:var(--duct);margin-top:14px;font-weight:600}
+
+/* meme slides */
+.memestage{display:grid;place-items:center}
+.meme{margin:0;display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.6vh,30px);width:100%}
+.memeimg{width:min(100%,104vh);aspect-ratio:16/9;max-height:56vh;border-radius:6px;background:center/contain no-repeat}
+.meme.noimg .memeimg{display:none}
+.memestage.over{outline:4px dashed var(--red);outline-offset:-14px}
+.memeline{font-weight:800;font-size:clamp(1.5rem,3vw,3rem);line-height:1.3;text-align:center;max-width:32ch;margin:0}
+.meme.noimg .memeline{font-size:clamp(2rem,4.6vw,4.8rem)}
+.memeline::before{content:"\201C";color:var(--red)}
+.memeline::after{content:"\201D";color:var(--red)}
+.memewho{text-align:center;color:var(--red);font-weight:700;font-size:clamp(1rem,1.6vw,1.5rem);margin:0}
+
+/* team names */
+.tteams{list-style:none;margin:clamp(12px,2.4vh,28px) 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(4,auto);column-gap:clamp(24px,4vw,72px);border-top:3px solid var(--graphite)}
+.tteams li{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:clamp(12px,1.4vw,22px);padding:clamp(10px,2.3vh,26px) 6px;border-bottom:1px solid var(--steel);cursor:text;min-height:clamp(64px,11vh,120px)}
+.tteams .tn{width:2.1em;height:2.1em;display:grid;place-items:center;font-weight:900;font-size:clamp(1.1rem,1.9vw,1.9rem);border:3px solid var(--graphite);border-radius:5px;transition:background .4s,border-color .4s,color .4s}
+.tteams li.named .tn{background:var(--red);border-color:var(--red);color:var(--white)}
+.tteams .slot{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(1.5rem,3vw,3.1rem);line-height:1.05;color:var(--red);overflow-wrap:anywhere}
+.tteams .slot.empty{color:#b8bec6;font-weight:600;font-stretch:100%;font-variation-settings:"wdth" 100;font-size:clamp(1rem,1.5vw,1.4rem)}
+.tteams input{font:inherit;font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(1.5rem,3vw,3.1rem);border:0;border-bottom:4px solid var(--red);background:transparent;color:var(--graphite);width:100%;padding:0;outline:none}
+.tteams .ch{display:inline-block;white-space:pre;animation:chin .7s cubic-bezier(.2,1.35,.4,1) both}
+@keyframes chin{0%{transform:translateX(90px) rotate(14deg);opacity:0;filter:blur(8px)}100%{transform:none;opacity:1;filter:none}}
+.tteams li.flash{animation:rowflash 1.4s ease-out}
+@keyframes rowflash{0%{background:var(--red-wash)}100%{background:rgba(253,232,234,0)}}
+.fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40}
+.steps{margin:6px 0 0;padding-left:22px}
+.steps li{margin:2px 0}
+.steps button{background:none;border:0;padding:3px 4px;font-weight:600;text-align:left;border-radius:3px}
+.steps button[aria-current="step"]{background:var(--red);color:var(--white)}
+.sent{list-style:none;margin:16px 0 0;padding:0}
+.sent li{padding:8px 2px;border-bottom:1px solid var(--steel);font-weight:700}
+.sent li::before{content:"\2713";color:var(--red);margin-right:10px}
 .toast{position:fixed;left:clamp(20px,3.6vw,64px);bottom:22px;background:var(--red);color:var(--white);padding:10px 20px;border-radius:4px;font-size:clamp(1rem,1.5vw,1.4rem);font-weight:700;box-shadow:0 10px 30px rgba(163,0,21,.25);z-index:30;max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ================= CONTROL PANEL ================= */
@@ -202,6 +262,9 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
 
 @media (max-width:900px){
   .show{grid-template-columns:1fr}
+  .tteams{grid-template-columns:1fr;grid-auto-flow:row;grid-template-rows:none}
+  .qstage{grid-template-columns:1fr}
+  .corner{grid-column:1;grid-row:3}
   .intake{align-items:center;margin-bottom:28px}
   .vent{width:min(86vw,420px)}
   .zone{grid-template-columns:auto 1fr auto}
@@ -216,91 +279,117 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
 
 <!-- ================= PROJECTOR ================= -->
 <div id="presenter" hidden>
-  <main class="show">
-    <header class="mast">
-      <h1 id="title">DTC Hackathon 2026</h1>
-      <span class="net" id="net" hidden>Offline, reconnecting</span>
-    </header>
+  <header class="mast">
+    <h1 id="title">DTC Hackathon 2026</h1>
+    <span class="net" id="net" hidden>Offline, reconnecting</span>
+  </header>
 
-    <section class="intake" aria-label="Check in">
+  <!-- 1. Join -->
+  <main class="show stage" id="sJoin" data-stage="join">
+    <section class="intake" aria-label="Join">
       <div class="vent">
         <div class="plate" id="plate">
           <div class="qr" id="qrBig"></div>
           <canvas id="qrCanvas" aria-hidden="true"></canvas>
         </div>
       </div>
-      <p class="cta">Scan to check in</p>
+      <p class="cta">Scan to join</p>
       <p class="url" id="urlBig"></p>
     </section>
-
     <section class="room" aria-label="Who is here">
       <div class="gauge">
         <svg viewBox="0 0 200 200" id="dial" role="img" aria-labelledby="readout"></svg>
         <div>
-          <p class="read" id="readout">No teams yet</p>
+          <p class="read" id="readout">Nobody yet</p>
           <p class="mode" id="mode"></p>
         </div>
       </div>
-      <ol class="zones" id="zones"></ol>
+      <p class="joinnote">Keep the page open on your phone. The first question appears there.</p>
     </section>
   </main>
+
+  <!-- 2-3, 6. First question, light-up, gust -->
+  <main class="stage qstage" id="sQ1" data-stage="q1" hidden>
+    <h2 class="qtext" id="q1text">Before you start any project, what's the first thing you do?</h2>
+    <div class="cloudwrap">
+      <div class="cloud" id="cloud" aria-live="polite"></div>
+      <div class="streaks" id="streaks" aria-hidden="true"></div>
+      <div class="twist" id="twist" hidden>
+        <p class="tw-big">Name it.</p>
+        <p class="tw-small" id="twSmall"></p>
+      </div>
+      <p class="cloud-empty" id="cloudEmpty">Answers appear here as you send them.</p>
+    </div>
+    <aside class="corner">
+      <div class="qr" id="qrCorner"></div>
+      <p><b id="ansCount">0</b> answers</p>
+    </aside>
+  </main>
+
+  <!-- 4-5. Meme slides -->
+  <main class="stage memestage" id="sMeme" data-stage="meme" hidden>
+    <figure class="meme" id="meme">
+      <div class="memeimg" id="memeImg" title="Drop an image here, or click to choose one"></div>
+      <figcaption>
+        <p class="memeline" id="memeLine"></p>
+        <p class="memewho" id="memeWho"></p>
+      </figcaption>
+    </figure>
+    <input type="file" id="memeFile" accept="image/*" hidden>
+  </main>
+
+  <!-- 7. Team names -->
+  <main class="stage namestage" id="sNames" data-stage="names" hidden>
+    <h2 class="qtext">Your team names</h2>
+    <ol class="tteams" id="tteams"></ol>
+  </main>
+  <canvas class="fx" id="fx" aria-hidden="true"></canvas>
 
   <aside class="panel" id="panel" hidden aria-label="Control panel">
     <div class="phead"><h2>Control panel</h2><button type="button" class="btn" id="bClose">Close</button></div>
     <div class="pbody">
       <section class="psec">
-        <h3>Teams</h3>
-        <p class="help">Upload a CSV or paste from Excel: rows of name and team, one column per team, or lines like "Team 1: Asha, Ravi". The list stays on this laptop.</p>
-        <div class="acts">
-          <label class="drop" id="drop"><input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values"><span class="btn red">Upload CSV</span></label>
-          <button type="button" class="btn quiet" id="bSample">Try sample teams</button>
-        </div>
-        <details>
-          <summary>Paste from Excel</summary>
-          <textarea id="paste" rows="7" placeholder="Name,Team&#10;Asha Kumar,Team 1&#10;Ravi S,Team 1&#10;Meena R,Team 2"></textarea>
-          <button type="button" class="btn" id="bParse">Use pasted text</button>
-        </details>
-        <div id="parseMsg"></div>
-        <ul class="tlist" id="tlist"></ul>
-        <div class="acts" style="margin-top:12px" id="teamActs" hidden>
-          <button type="button" class="btn quiet" id="bDownload">Download teams as CSV</button>
-          <button type="button" class="btn danger" id="bClear">Remove teams</button>
-        </div>
-      </section>
-
-      <section class="psec">
-        <h3>Check-in</h3>
-        <p class="help">Phones can find their names only after check-in is open. Renamed teams update on phones by themselves.</p>
-        <div class="acts">
-          <button type="button" class="btn red" id="bDoors">Open check-in</button>
-          <span class="state" id="doorState" data-s="closed">Check-in closed</span>
-        </div>
-      </section>
-
-      <section class="psec">
-        <h3>Checked in <span id="ciCount" style="color:var(--duct);font-weight:600"></span></h3>
-        <p class="help" id="ciEmpty">Nobody yet.</p>
-        <table class="people" id="ciTable" hidden><tbody id="ciBody"></tbody></table>
-        <div class="acts" style="margin-top:10px"><button type="button" class="btn quiet" id="bUnrelease" hidden></button></div>
-      </section>
-
-      <section class="psec">
-        <h3>Session</h3>
-        <div class="mini"><div class="qr" id="qrSmall"></div><div><p class="code" id="sessCode"></p><p class="url" id="urlSmall"></p></div></div>
-        <div class="acts">
+        <h3>Show</h3>
+        <p class="help"><kbd>&rarr;</kbd> or <kbd>Space</kbd> goes forward, <kbd>&larr;</kbd> goes back. A presentation clicker works too.</p>
+        <ol class="steps" id="steps"></ol>
+        <div class="acts" style="margin-top:12px">
           <button type="button" class="btn" id="bIntro">Play intro</button>
           <button type="button" class="btn" id="bReplay">Replay QR portal</button>
           <button type="button" class="btn" id="bFull">Full screen</button>
         </div>
+      </section>
+      <section class="psec">
+        <h3>First question</h3>
+        <p class="help">On the light-up screen, click any word to switch it between red (right), grey (joke) and plain.</p>
+        <div class="acts">
+          <button type="button" class="btn quiet" id="bSampleAns">Add 20 sample answers</button>
+          <button type="button" class="btn danger" id="bClearAns">Clear answers</button>
+        </div>
+      </section>
+      <section class="psec">
+        <h3>Team names</h3>
+        <p class="help">Type them on the team names screen: press a number <kbd>1</kbd> to <kbd>8</kbd>, type, then <kbd>Enter</kbd>. You can also fix them here.</p>
+        <ol class="tlist" id="tlist"></ol>
+        <div class="acts" style="margin-top:12px"><button type="button" class="btn danger" id="bClearTeams">Clear team names</button></div>
+      </section>
+      <section class="psec">
+        <h3>Meme pictures</h3>
+        <p class="help">On a meme screen, drop a picture onto it or click the empty frame. Pictures stay on this laptop.</p>
+        <div class="acts"><button type="button" class="btn quiet" id="bClearImgs">Remove meme pictures</button></div>
+      </section>
+      <section class="psec">
+        <h3>Session</h3>
+        <label class="field">People expected in the room<input id="expected" type="number" min="1" max="500" inputmode="numeric"></label>
+        <div class="mini"><div class="qr" id="qrSmall"></div><div><p class="code" id="sessCode"></p><p class="url" id="urlSmall"></p></div></div>
         <details>
           <summary>Advanced</summary>
           <label class="field" style="margin-top:10px">Phone page address (the QR code points here)<input id="baseInput" spellcheck="false"></label>
           <div class="acts" style="margin-top:12px"><button type="button" class="btn danger" id="bNew">Start a new session</button></div>
-          <p class="help" style="margin-top:8px">A new session makes a new QR code, and everyone scans again.</p>
+          <p class="help" style="margin-top:8px">A new session makes a new QR code. Everyone scans again, and answers start fresh.</p>
         </details>
       </section>
     </div>
-    <p class="foot">Open this panel with <kbd>Shift</kbd> + <kbd>S</kbd> or by triple-clicking the title. <kbd>Esc</kbd> closes it, <kbd>F</kbd> toggles full screen. On the intro, <kbd>Space</kbd> plays and <kbd>Esc</kbd> skips.</p>
+    <p class="foot"><kbd>Shift</kbd> + <kbd>S</kbd> or a triple-click on the title opens this panel, <kbd>Esc</kbd> closes it, <kbd>F</kbd> toggles full screen.</p>
   </aside>
   <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
 </div>
@@ -320,49 +409,18 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
   <div class="pwrap">
     <section id="sWait" class="waiting" hidden>
       <div class="blower" data-fan></div>
-      <h1>Check-in opens soon</h1>
-      <p class="sub">Keep this page open. It updates by itself.</p>
+      <h1 id="waitTitle">You're in</h1>
+      <p class="sub" id="waitSub">Eyes on the big screen. Questions appear here when it's time to answer.</p>
     </section>
 
-    <section id="sPick" hidden>
-      <h1>Find your name</h1>
-      <p class="sub">Type a few letters, then tap your name.</p>
-      <input id="q" class="find" type="search" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Your name" aria-label="Your name" aria-controls="results">
-      <ul class="hits" id="results" aria-live="polite"></ul>
-      <p class="nohit" id="noMatch" hidden>No match. Try your first name or your initials.</p>
-      <p class="pfoot"><button type="button" class="textbtn" id="bNotListed">My name isn't here</button></p>
-    </section>
-
-    <section id="sConfirm" hidden>
-      <h1>Is this you?</h1>
-      <div class="who"><div class="nm" id="cName"></div><div class="tm" id="cTeam"></div></div>
-      <p class="note" id="cTaken" hidden>Someone has already checked in with this name. If that was you on another phone, go ahead.</p>
-      <div class="stack">
-        <button type="button" class="btn red" id="bYes">Yes, check me in</button>
-        <button type="button" class="btn" id="bBack">No, go back</button>
-      </div>
-    </section>
-
-    <section id="sGuest" hidden>
-      <h1>Add yourself</h1>
-      <p class="sub">Not on the list? Tell us your name and pick your team.</p>
-      <label class="pfield">Your name<input id="gName" autocomplete="name" maxlength="60"></label>
-      <label class="pfield">Your team<select id="gTeam"></select></label>
-      <div class="stack">
-        <button type="button" class="btn red" id="bGuestGo">Check me in</button>
-        <button type="button" class="btn" id="bGuestBack">Back to the list</button>
-      </div>
-    </section>
-
-    <section id="sDone" class="done" hidden>
-      <div class="blower" id="myFan" data-fan></div>
-      <p class="sub">You're in</p>
-      <div class="nm" id="dName"></div>
-      <div class="tm" id="dTeam"></div>
-      <p class="speed" id="dSpeed"></p>
-      <ul class="mates" id="mates"></ul>
-      <p class="sendline" id="sendLine"></p>
-      <p class="pfoot"><button type="button" class="textbtn" id="bNotMe">Not you? Change</button></p>
+    <section id="sAsk" hidden>
+      <h1 id="askPrompt"></h1>
+      <form id="askForm" autocomplete="off">
+        <input id="ans" class="find" maxlength="28" autocapitalize="none" spellcheck="false" placeholder="Your answer" aria-label="Your answer" enterkeyhint="send">
+        <div class="stack"><button type="submit" class="btn red" id="bSend">Send</button></div>
+      </form>
+      <p class="sendline" id="askLine"></p>
+      <ul class="sent" id="sent"></ul>
     </section>
   </div>
 </div>
@@ -2989,30 +3047,91 @@ function subscribe(topic, onMsg, onStatus) {
   return { close() { closed = true; clearTimeout(retryT); clearTimeout(pollT); if (es) es.close(); } };
 }
 
-/* ================= ROUTE ================= */
-const route = location.hash.match(/^#join=([A-Za-z0-9_-]{6,64})$/);
-if (route) phone(route[1]); else presenter();
 
+/* ================= ANSWER WORDS ================= */
+function cleanAns(w) { return String(w || "").replace(/[\u0000-\u001f\u007f]/g, "").replace(/\s+/g, " ").trim().slice(0, 28); }
+function keyOf(w) {
+  let k = w.toLowerCase().replace(/^[^\p{L}\p{M}\p{N}]+|[^\p{L}\p{M}\p{N}]+$/gu, "").replace(/\s+/g, " ");
+  if (k.length > 3 && k.endsWith("s") && !k.endsWith("ss")) k = k.slice(0, -1);
+  return k;
+}
+const JOKE = new Set(["coffee", "tea", "chai", "sleep", "nap", "nothing", "panic", "pray", "prayer", "god", "chatgpt", "gpt", "google", "googling", "lunch", "leave", "food", "snack", "biryani", "holiday", "cry", "run", "quit", "resign", "netflix", "copy", "paste", "stackoverflow", "claude", "gemini", "copilot", "excuse", "sweet", "bath", "breakfast", "dinner", "party", "vacation", "wfh", "yawn", "music", "smoke", "walk", "lol"]);
+const RIGHT_ROOTS = ["plan", "requir", "understand", "analy", "research", "discuss", "brainstorm", "scope", "goal", "objective", "design", "think", "study", "problem", "defin", "gather", "kick", "estimat", "feasib", "budget", "timeline", "prepar", "name", "naming", "why", "ask", "question", "clarif", "document", "blueprint", "strateg", "idea", "ideat", "meet", "stakeholder", "user", "customer", "need", "spec", "roadmap", "outline", "learn", "explor", "sketch", "wireframe", "architect", "survey", "vision", "purpose", "review", "decide", "decision", "priorit", "risk", "list", "team", "objective", "target", "approach", "assess", "investigat", "story", "storie", "backlog", "epic", "agenda"];
+function classify(key) {
+  const toks = key.split(" ");
+  if (JOKE.has(key) || toks.some(t => JOKE.has(t))) return "joke";
+  if (toks.some(t => RIGHT_ROOTS.some(r => t.startsWith(r)))) return "right";
+  return "plain";
+}
+const isNameWord = key => /(^|\s)(name|names|naming|title|christen)(\s|$)/.test(key) || /^name/.test(key);
+const SAMPLE_ANS = ["plan", "coffee", "requirements", "plan", "understand the problem", "coffee", "brainstorm", "ask ChatGPT", "plan", "discuss", "research", "pray", "scope", "plan", "coffee", "analyse", "team meeting", "sleep", "requirements", "google it"];
+
+/* ================= SHOW STEPS ================= */
+const Q1_PROMPT = "Before you start any project, what's the first thing you do?";
+const STAGES = [
+  { id: "join", name: "Join: QR code", el: "sJoin" },
+  { id: "q1", name: "Question 1: live word cloud", el: "sQ1", ask: "q1" },
+  { id: "q1lit", name: "Right answers light up", el: "sQ1" },
+  { id: "meme1", name: "Meme: Amma's line", el: "sMeme", img: "meme1", line: "எந்த ஒரு விஷயத்த பண்றதுக்கு முன்னாடியும் ஸ்வீட் சாப்பிட்டு பண்ணணும்", who: "Every Amma, before every exam" },
+  { id: "meme2", name: "Meme: Vadivelu", el: "sMeme", img: "meme2", line: "எதை பண்ணாலும் பிளான் பண்ணி தான் பண்ணணும்", who: "Vadivelu" },
+  { id: "again", name: "Back to the cloud: plan for what?", el: "sQ1" },
+  { id: "gust", name: "The gust: Name it.", el: "sQ1" },
+  { id: "names", name: "Team names", el: "sNames" }
+];
 /* ================= PRESENTER ================= */
 function presenter() {
   $("#presenter").hidden = false;
   let topic = store.get("dtc-topic", null);
   if (!validTopic(topic)) { topic = "dtc-" + rand(12); store.set("dtc-topic", topic); }
-  let roster = store.get("dtc-roster", null);
-  if (roster && !(Array.isArray(roster.teams) && Array.isArray(roster.people))) roster = null;
-  let door = store.get("dtc-door", { open: false, dirty: true, ver: 0 });
-  let failed = false, sending = false, sendAgain = false, pubT = 0;
-  let released = store.get("dtc-released", {});
+  const saved = store.get("dtc-show", null) || {};
+  const st = {
+    stage: Math.max(0, Math.min(STAGES.length - 1, saved.stage | 0)),
+    teams: Array.isArray(saved.teams) && saved.teams.length === 8 ? saved.teams.map(t => F.cleanName(t).slice(0, 32)) : Array(8).fill(""),
+    lit: saved.lit && typeof saved.lit === "object" ? saved.lit : {},
+    hidden: saved.hidden && typeof saved.hidden === "object" ? saved.hidden : {},
+    expected: saved.expected > 0 ? saved.expected : 50,
+    cut: saved.cut | 0,
+    sample: !!saved.sample
+  };
+  const save = () => store.set("dtc-show", st);
   const isWeb = /^https?:$/.test(location.protocol);
   let base = store.get("dtc-base", null) || (isWeb ? location.origin + location.pathname : PUBLIC_BASE_GUESS);
   const joinUrl = () => base.replace(/#.*$/, "") + "#join=" + topic;
-  let joins = new Map();
-  let sub = null, replaying = true, replayT = 0, renderT = 0, prevIn = null, netT = 0;
-  const toastQ = []; let toastT = 0;
+  const cur = () => STAGES[st.stage];
+  let answers = [], devices = new Set(), sub = null, replaying = true, replayT = 0, netT = 0, cloudT = 0;
 
-  const saveDoor = () => store.set("dtc-door", door);
-  const saveRoster = () => store.set("dtc-roster", roster);
-  const activeJoins = () => new Map([...joins].filter(([dev, j]) => !(released[dev] >= j.time)));
+  /* ---------- sparks on the white page ---------- */
+  const FX = (() => {
+    const cv = $("#fx"), ctx = cv.getContext("2d");
+    let W = 0, H = 0, run = false, last = 0;
+    const parts = [];
+    function resize() { const d = Math.min(window.devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+    addEventListener("resize", resize); resize();
+    function burst(x, y, n, speed) {
+      if (reduceMotion) return;
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2, s = (speed || 300) * (.35 + Math.random() * .8);
+        parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 80, life: 1, decay: 1 / (.4 + Math.random() * .55), w: 1.3 + Math.random() * 1.8 });
+      }
+      if (!run) { run = true; last = performance.now(); requestAnimationFrame(frame); }
+    }
+    function frame(now) {
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      ctx.clearRect(0, 0, W, H); ctx.lineCap = "round";
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.vy += 520 * dt; p.vx *= .985; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+        ctx.globalAlpha = Math.min(1, p.life * 1.5);
+        ctx.strokeStyle = p.life > .65 ? "#ffb300" : p.life > .35 ? "#ff7a00" : "#d6001c";
+        ctx.lineWidth = p.w;
+        ctx.beginPath(); ctx.moveTo(p.x - p.vx * .03, p.y - p.vy * .03); ctx.lineTo(p.x, p.y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      if (parts.length) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, W, H); run = false; }
+    }
+    return { burst };
+  })();
 
   /* ---------- control panel ---------- */
   const panel = $("#panel");
@@ -3022,63 +3141,11 @@ function presenter() {
   }
   $("#bClose").addEventListener("click", () => setPanel(false));
   $("#title").addEventListener("click", e => { if (e.detail >= 3) setPanel(panel.hidden); });
-  document.addEventListener("keydown", e => {
-    if (intro.state !== "idle" && panel.hidden) {
-      if (e.key === " " || e.key === "Enter") { e.preventDefault(); intro.state === "armed" ? intro.play() : intro.skip(); return; }
-      if (e.key === "Escape") { e.preventDefault(); intro.skip(); return; }
-    }
-    if (e.key === "Escape" && !panel.hidden) { setPanel(false); return; }
-    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest("input,textarea,select")) return;
-    if (e.shiftKey && (e.key === "S" || e.key === "s")) { e.preventDefault(); setPanel(panel.hidden); }
-    else if (!e.shiftKey && (e.key === "f" || e.key === "F")) toggleFull();
-  });
   function toggleFull() {
     if (document.fullscreenElement) document.exitFullscreen && document.exitFullscreen();
     else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => {});
   }
   $("#bFull").addEventListener("click", toggleFull);
-
-  /* ---------- teams in ---------- */
-  function loadText(text, source) {
-    const r = F.parseRoster(text);
-    if (r.error) { showMsg(true, r.error); return; }
-    const old = roster ? new Map(roster.teams.map(t => [F.norm(t.label), t.name])) : new Map();
-    r.teams.forEach(t => { const keep = old.get(F.norm(t.label)); if (keep) t.name = keep; });
-    roster = { teams: r.teams, people: r.people, source: source || "" };
-    saveRoster();
-    door.dirty = true; saveDoor();
-    showMsg(false, `Loaded ${plural(r.people.length, "person", "people")} in ${plural(r.teams.length, "team", "teams")}${source ? " from " + source : ""}.`, r.warnings);
-    render();
-    if (door.open) schedulePublish();
-  }
-  function showMsg(isErr, text, warns) {
-    $("#parseMsg").innerHTML = `<div class="msg${isErr ? " err" : ""}">${esc(text)}${warns && warns.length ? `<ul>${warns.map(w => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}</div>`;
-  }
-  function readFile(f) {
-    if (!f) return;
-    if (/\.(xlsx|xls|numbers|ods)$/i.test(f.name)) { showMsg(true, "That's a spreadsheet file, not a CSV. In Excel, use File > Save As > CSV and upload that, or copy the cells and use Paste from Excel."); return; }
-    const fr = new FileReader();
-    fr.onload = () => loadText(String(fr.result || ""), f.name);
-    fr.onerror = () => showMsg(true, "Couldn't read that file. Try saving it again as CSV.");
-    fr.readAsText(f);
-  }
-  $("#file").addEventListener("change", e => { readFile(e.target.files[0]); e.target.value = ""; });
-  ["dragenter", "dragover"].forEach(t => panel.addEventListener(t, e => { e.preventDefault(); panel.classList.add("over"); }));
-  ["dragleave", "drop"].forEach(t => panel.addEventListener(t, e => { if (t === "dragleave" && panel.contains(e.relatedTarget)) return; panel.classList.remove("over"); }));
-  panel.addEventListener("drop", e => { e.preventDefault(); readFile(e.dataTransfer.files[0]); });
-  $("#bParse").addEventListener("click", () => loadText($("#paste").value, "pasted text"));
-  $("#bSample").addEventListener("click", () => {
-    const first = ["Asha", "Ravi", "Meena", "Karthik", "Divya", "Arjun", "Priya", "Sanjay", "Kavya", "Vikram", "Nila", "Harish", "Lakshmi", "Gokul", "Revathi", "Siddharth", "Anitha", "Manoj", "Deepa", "Karthik", "Bala", "Swathi", "Naveen", "Ishwarya", "Prakash", "Sowmya", "Ashwin", "Janani", "Vignesh", "Pooja"];
-    const init = "KSRMPVNTGAB";
-    loadText("Name,Team\n" + first.map((n, i) => `${n} ${init[(i * 7) % init.length]},Team ${i % 6 + 1}`).join("\n"), "the sample");
-  });
-  $("#bDownload").addEventListener("click", () => {
-    if (!roster) return;
-    const blob = new Blob([F.rosterToCSV(roster)], { type: "text/csv" });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "dtc-hackathon-teams.csv";
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  });
-  twoStep($("#bClear"), "Click again to remove", () => { roster = null; store.del("dtc-roster"); door.dirty = true; saveDoor(); $("#parseMsg").innerHTML = ""; render(); });
   function twoStep(btn, armedText, action) {
     const label = btn.textContent; let t = 0;
     btn.addEventListener("click", () => {
@@ -3088,40 +3155,11 @@ function presenter() {
     });
   }
 
-  /* ---------- check-in (publish teams) ---------- */
-  async function publish() {
-    if (!roster) return;
-    if (sending) { sendAgain = true; return; }
-    sending = true; failed = false; renderDoor();
-    const ver = Date.now();
-    let ok = true;
-    for (const m of F.rosterMessages(roster, ver)) if (!(await post(topic, m))) { ok = false; break; }
-    sending = false;
-    if (ok) door = { open: true, dirty: false, ver }; else failed = true;
-    saveDoor(); renderDoor();
-    if (sendAgain) { sendAgain = false; publish(); }
-  }
-  function schedulePublish() { clearTimeout(pubT); pubT = setTimeout(publish, 700); }
-  $("#bDoors").addEventListener("click", publish);
-  function renderDoor() {
-    const b = $("#bDoors"), s = $("#doorState");
-    b.disabled = !roster || sending;
-    b.textContent = door.open ? "Send teams again" : "Open check-in";
-    let st, txt;
-    if (!roster) { st = "closed"; txt = "Load the teams first"; }
-    else if (sending) { st = "sending"; txt = "Sending teams to phones"; }
-    else if (failed) { st = "failed"; txt = "Couldn't reach the relay. Check the internet, then send again."; }
-    else if (!door.open) { st = "closed"; txt = "Check-in closed"; }
-    else if (door.dirty) { st = "dirty"; txt = "Sending changes"; }
-    else { st = "open"; txt = `Open for ${plural(roster.people.length, "name", "names")}`; }
-    s.dataset.s = st; s.textContent = txt;
-  }
-
   /* ---------- session + QR ---------- */
   let animToken = 0;
   function renderQR(animate) {
     const svg = qrSvg(joinUrl());
-    $("#qrBig").innerHTML = svg; $("#qrSmall").innerHTML = svg;
+    $("#qrBig").innerHTML = svg; $("#qrSmall").innerHTML = svg; $("#qrCorner").innerHTML = svg;
     const short = joinUrl().replace(/^https?:\/\//, "");
     $("#urlBig").textContent = short; $("#urlSmall").textContent = short;
     $("#sessCode").textContent = "Session " + topic;
@@ -3269,63 +3307,102 @@ function presenter() {
     const v = e.target.value.trim(); if (!/^https?:\/\//.test(v)) { e.target.value = base; return; }
     base = v; store.set("dtc-base", base); renderQR(false);
   });
-  twoStep($("#bNew"), "Click again: everyone scans again", () => {
-    topic = "dtc-" + rand(12); store.set("dtc-topic", topic);
-    door = { open: false, dirty: true, ver: 0 }; saveDoor();
-    released = {}; store.set("dtc-released", released);
-    joins = new Map(); prevIn = null;
-    connect(); render(); setPanel(false); setTimeout(() => renderQR(true), 200);
-  });
-  let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(() => renderQR(false), 150); });
+  twoStep($("#bNew"), "Click again: everyone scans again", newSession);
+  let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(() => { renderQR(false); if (cur().el === "sQ1" && cur().id !== "gust") drawCloud(false); }, 150); });
 
-  /* ---------- relay in ---------- */
+
+
+  /* ---------- steps ---------- */
+  let stageT = 0;
+  function goStage(i, opts) {
+    i = Math.max(0, Math.min(STAGES.length - 1, i));
+    const prev = STAGES[st.stage], s = STAGES[i];
+    st.stage = i; save();
+    $$("#presenter .stage").forEach(el => { el.hidden = el.id !== s.el; });
+    if (s.el === "sQ1") {
+      const cloud = $("#cloud");
+      $$(".w", cloud).forEach(n => n.getAnimations().forEach(a => a.cancel()));
+      $("#twist").hidden = true; $("#streaks").innerHTML = "";
+      cloud.classList.toggle("lit", s.id !== "q1");
+      $$(".w.chosen", cloud).forEach(n => n.classList.remove("chosen"));
+      drawCloud(false);
+      if (s.id === "gust") setTimeout(() => { if (cur().id === "gust") gust(); }, opts && opts.instant ? 0 : 450);
+    }
+    if (s.el === "sMeme") renderMeme(s);
+    if (s.el === "sNames") renderNames();
+    if (s.el === "sJoin" && prev && prev.id !== "join" && !(opts && opts.load)) renderQR(false);
+    renderSteps();
+    clearTimeout(stageT);
+    stageT = setTimeout(broadcastStage, opts && opts.load ? 600 : 250);
+  }
+  function broadcastStage() {
+    const s = cur();
+    post(topic, { v: 1, t: "stage", id: s.id, ask: s.ask || null, prompt: s.ask === "q1" ? Q1_PROMPT : "" }, 4);
+  }
+  const next = () => { if (st.stage < STAGES.length - 1) goStage(st.stage + 1); };
+  const back = () => { if (st.stage > 0) goStage(st.stage - 1); };
+  function renderSteps() {
+    const ol = $("#steps"); if (!ol) return;
+    ol.innerHTML = STAGES.map((s, i) => `<li><button type="button" data-go="${i}"${i === st.stage ? ' aria-current="step"' : ""}>${esc(s.name)}</button></li>`).join("");
+    $$("[data-go]", ol).forEach(b => b.addEventListener("click", () => goStage(+b.dataset.go)));
+  }
+
+  /* ---------- keys ---------- */
+  let editing = -1;
+  document.addEventListener("keydown", e => {
+    if (intro.state !== "idle" && panel.hidden) {
+      if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); intro.state === "armed" ? intro.play() : intro.skip(); return; }
+      if (e.key === "Escape") { e.preventDefault(); intro.skip(); return; }
+      return;
+    }
+    if (e.key === "Escape" && !panel.hidden) { setPanel(false); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest("input,textarea,select")) return;
+    if (e.shiftKey && (e.key === "S" || e.key === "s")) { e.preventDefault(); setPanel(panel.hidden); return; }
+    if (!panel.hidden) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); next(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); back(); }
+    else if (e.key === "f" || e.key === "F") toggleFull();
+    else if (cur().id === "names" && /^[1-8]$/.test(e.key)) { e.preventDefault(); editTeam(+e.key - 1); }
+  });
+
+  /* ---------- relay ---------- */
   function connect() {
     if (sub) sub.close();
+    answers = []; devices = new Set();
     replaying = true; clearTimeout(replayT);
     replayT = setTimeout(() => { replaying = false; }, 2500);
     sub = subscribe(topic, onMsg, setNet);
   }
   function onMsg(p, time) {
-    const dev = String(p.d || "").slice(0, 24);
-    if (!dev) return;
-    const prev = joins.get(dev); if (prev && prev.time > time) return;
-    if (p.t === "join") joins.set(dev, { pid: String(p.pid || "").slice(0, 16), n: F.cleanName(p.n) || "Someone", team: F.cleanName(p.team), g: !!p.g, time });
-    else if (p.t === "leave") joins.delete(dev);
-    else return;
-    schedule();
+    const d = String(p.d || "").slice(0, 24);
+    if (p.t === "hi" && d) { devices.add(d); scheduleRoom(); }
+    else if (p.t === "ans" && d && p.q === "q1") {
+      devices.add(d);
+      const text = cleanAns(p.text);
+      if (!text) return;
+      answers.push({ d, text, time });
+      scheduleRoom();
+      if (cur().el === "sQ1" && cur().id !== "gust") { clearTimeout(cloudT); cloudT = setTimeout(() => drawCloud(!replaying && cur().id === "q1"), 150); }
+    }
   }
   function setNet(s) {
     clearTimeout(netT);
     if (s === "live") { $("#net").hidden = true; return; }
     netT = setTimeout(() => { $("#net").hidden = false; }, s === "off" ? 0 : 5000);
   }
+  function newSession() {
+    topic = "dtc-" + rand(12); store.set("dtc-topic", topic);
+    st.cut = 0; st.hidden = {}; st.lit = {}; save();
+    connect(); setPanel(false); goStage(0); renderRoom();
+    setTimeout(() => renderQR(true), 200);
+  }
 
-  /* ---------- render ---------- */
-  function schedule() { if (renderT) return; renderT = setTimeout(() => { renderT = 0; render(); }, 120); }
-  function render() { renderRoom(); if (!panel.hidden) renderPanel(); }
-  function renderPanel() { renderDoor(); renderTeamList(); renderCheckins(); $("#teamActs").hidden = !roster; }
-
+  /* ---------- join screen: thermostat ---------- */
+  let roomT = 0;
+  function scheduleRoom() { if (roomT) return; roomT = setTimeout(() => { roomT = 0; renderRoom(); }, 200); }
   function renderRoom() {
-    const list = $("#zones");
-    if (!roster) { list.innerHTML = ""; drawDial(0, 0); return; }
-    const map = F.seatMap(roster, activeJoins());
-    const inNow = new Set(), fresh = [];
-    let seated = 0, total = 0;
-    list.innerHTML = map.rows.map(r => {
-      const on = r.seats.filter(s => s.on).length;
-      seated += on; total += r.seats.length;
-      const crew = r.seats.map(s => {
-        if (s.on) inNow.add(s.pid);
-        const isNew = s.on && prevIn && !prevIn.has(s.pid) && !replaying;
-        if (isNew) fresh.push({ name: s.name, team: r.team.name });
-        return `<li class="${[s.on ? "in" : "", s.guest ? "guest" : "", isNew && !reduceMotion ? "fresh" : ""].join(" ").trim()}">${esc(s.name)}</li>`;
-      }).join("");
-      const full = on === r.seats.length && on > 0;
-      return `<li class="zone${full ? " full" : ""}"><span class="zl">${F.rowLetter(r.ti)}</span><span class="zn">${esc(r.team.name)}${r.team.name !== r.team.label ? `<small>${esc(r.team.label)}</small>` : ""}</span><ul class="crew">${crew}</ul><span class="zc">${on}/${r.seats.length}</span></li>`;
-    }).join("");
-    prevIn = inNow;
-    drawDial(seated, total);
-    if (fresh.length) { toastQ.push(...fresh); if (!toastT) nextToast(); }
+    drawDial(devices.size, st.expected);
+    $("#ansCount").textContent = cloudAnswers().length;
   }
   function drawDial(seated, total) {
     const pct = total ? Math.min(1, seated / total) : 0, cx = 100, cy = 100;
@@ -3340,209 +3417,314 @@ function presenter() {
     $("#dial").innerHTML = `${ticks}<path d="${arc(135, 405, 76)}" fill="none" stroke="#eceff2" stroke-width="12"/>${val}
       <text x="100" y="108" text-anchor="middle" class="num" font-size="54">${seated}</text>
       <text x="100" y="134" text-anchor="middle" class="unit" font-size="15">of ${total}</text>`;
-    $("#readout").textContent = total ? `${seated} of ${plural(total, "person", "people")} ${seated === 1 ? "is" : "are"} in` : "Waiting for teams";
-    $("#mode").textContent = !total ? "" : pct >= 1 ? "At setpoint. Everyone's in." : pct >= .75 ? "Almost at setpoint" : pct > 0 ? "Warming up" : "Cold start";
+    $("#readout").textContent = seated ? `${plural(seated, "phone", "phones")} connected` : "Nobody yet";
+    $("#mode").textContent = pct >= 1 ? "At setpoint. Everyone's in." : pct >= .75 ? "Almost at setpoint" : pct > 0 ? "Warming up" : "Cold start";
   }
-  function nextToast() {
-    const el = $("#toast");
-    if (!toastQ.length) { el.hidden = true; toastT = 0; return; }
-    if (toastQ.length > 3) { const n = toastQ.length; toastQ.length = 0; el.textContent = `${n} people just checked in`; }
-    else { const t = toastQ.shift(); el.textContent = `${firstName(t.name)} joined ${t.team}`; }
-    el.hidden = false;
-    toastT = setTimeout(nextToast, 2200);
+
+
+  /* ---------- first question: word cloud ---------- */
+  function cloudAnswers() {
+    const perDev = new Map(), out = [];
+    for (const a of answers) {
+      if (a.time < st.cut) continue;
+      const n = perDev.get(a.d) || 0; if (n >= 5) continue;
+      perDev.set(a.d, n + 1); out.push(a);
+    }
+    if (st.sample) SAMPLE_ANS.forEach((t, i) => out.push({ d: "sample" + i, text: t, time: 0 }));
+    return out;
   }
+  function aggregate() {
+    const m = new Map();
+    for (const a of cloudAnswers()) {
+      const k = keyOf(a.text); if (!k || st.hidden[k]) continue;
+      let e = m.get(k); if (!e) { e = { key: k, count: 0, forms: new Map(), first: a.time }; m.set(k, e); }
+      e.count++; e.forms.set(a.text, (e.forms.get(a.text) || 0) + 1);
+    }
+    return [...m.values()].map(e => ({ key: e.key, count: e.count, first: e.first, display: [...e.forms.entries()].sort((a, b) => b[1] - a[1])[0][0] }))
+      .sort((a, b) => b.count - a.count || a.first - b.first);
+  }
+  const mctx = document.createElement("canvas").getContext("2d");
+  function place(items, W, H, minF, maxF, force) {
+    const rects = [], out = [], max = items.length ? items[0].count : 1, k = Math.sqrt(W / H);
+    for (const it of items) {
+      const t = max > 1 ? Math.sqrt((it.count - 1) / (max - 1)) : (items.length <= 6 ? .55 : .25);
+      const f = Math.round(minF + (maxF - minF) * t);
+      mctx.font = `800 ${f}px Archivo, "Noto Sans Tamil", sans-serif`;
+      const w = mctx.measureText(it.display).width + f * .4, h = f * 1.12 + 6;
+      const start = (F.hash(it.key) % 628) / 100;
+      let ok = null;
+      for (let i = 0; i < 3200; i++) {
+        const a = start + i * .12, r = i * .55, x = Math.cos(a) * r * k, y = Math.sin(a) * r / k;
+        if (Math.abs(x) + w / 2 > W / 2 - 4 || Math.abs(y) + h / 2 > H / 2 - 4) { if (r > Math.max(W, H)) break; continue; }
+        let hit = false;
+        for (const q of rects) if (Math.abs(x - q.x) * 2 < w + q.w && Math.abs(y - q.y) * 2 < h + q.h) { hit = true; break; }
+        if (!hit) { ok = { x, y }; break; }
+      }
+      if (!ok) { if (force) continue; return null; }
+      rects.push({ x: ok.x, y: ok.y, w, h });
+      out.push(Object.assign({}, it, { x: ok.x, y: ok.y, f }));
+    }
+    return out;
+  }
+  function wordClass(key) { return st.lit[key] || classify(key); }
+  function drawCloud(fx) {
+    const el = $("#cloud"), W = el.clientWidth, H = el.clientHeight;
+    const items = aggregate().slice(0, 80);
+    $("#cloudEmpty").hidden = items.length > 0;
+    $("#ansCount").textContent = cloudAnswers().length;
+    if (!W || !H) return;
+    const maxF = Math.max(34, Math.min(H * .24, W * .13, 150)), minF = Math.max(16, Math.min(30, H * .055));
+    let s = 1, placed = null;
+    for (let i = 0; i < 9 && !placed; i++) { placed = place(items, W, H, Math.max(13, minF * Math.max(.6, s)), maxF * s, false); s *= .86; }
+    if (!placed) placed = place(items, W, H, 13, maxF * s, true);
+    const existing = new Map($$(".w", el).map(n => [n.dataset.k, n]));
+    const keep = new Set(), box = el.getBoundingClientRect();
+    placed.forEach((p, i) => {
+      let n = existing.get(p.key); const isNew = !n;
+      if (!n) {
+        n = document.createElement("button"); n.type = "button"; n.className = "w"; n.dataset.k = p.key;
+        n.addEventListener("click", () => wordClick(p.key));
+        el.appendChild(n);
+      }
+      const prevC = +n.dataset.c || 0;
+      n.textContent = p.display;
+      n.style.fontSize = p.f + "px";
+      n.style.transform = `translate(-50%,-50%) translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`;
+      n.dataset.x = p.x; n.dataset.y = p.y; n.dataset.c = p.count;
+      n.classList.toggle("top", i === 0 && p.count > 1);
+      const c = wordClass(p.key);
+      n.classList.toggle("right", c === "right"); n.classList.toggle("joke", c === "joke");
+      n.title = el.classList.contains("lit") ? "Click to switch between red, grey and plain" : "Click to hide this word";
+      keep.add(p.key);
+      if (fx && (isNew || p.count > prevC)) {
+        if (isNew) { n.classList.remove("new"); void n.offsetWidth; n.classList.add("new"); }
+        FX.burst(box.left + W / 2 + p.x, box.top + H / 2 + p.y, isNew ? 26 : 12, isNew ? 300 : 200);
+      }
+    });
+    existing.forEach((n, k) => { if (!keep.has(k)) n.remove(); });
+  }
+  function wordClick(key) {
+    const lit = $("#cloud").classList.contains("lit");
+    if (cur().id === "gust") return;
+    if (!lit) { st.hidden[key] = true; save(); drawCloud(false); renderPanelHidden(); return; }
+    const order = ["right", "joke", "plain"], c = wordClass(key);
+    st.lit[key] = order[(order.indexOf(c) + 1) % 3]; save();
+    drawCloud(false);
+  }
+  /* The gust: wind from the right blows every word off the screen. A word that already says "name" stays. */
+  function gust() {
+    const cloud = $("#cloud"), W = cloud.clientWidth, H = cloud.clientHeight, words = $$(".w", cloud);
+    const keep = words.filter(n => isNameWord(n.dataset.k)).sort((a, b) => (+b.dataset.c) - (+a.dataset.c))[0] || null;
+    const tw = $("#twist"), small = $("#twSmall");
+    if (reduceMotion) {
+      words.forEach(n => { if (n !== keep) n.style.opacity = "0"; });
+      small.textContent = keep ? `Someone here said “${keep.textContent}” first.` : "Every project starts with a name.";
+      tw.hidden = false; return;
+    }
+    const sk = $("#streaks"); sk.innerHTML = "";
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement("i");
+      s.style.top = (4 + Math.random() * 92).toFixed(1) + "%";
+      s.style.opacity = (.35 + Math.random() * .6).toFixed(2);
+      sk.appendChild(s);
+      s.animate([{ transform: "translateX(0)" }, { transform: `translateX(-${(W * 1.9).toFixed(0)}px)` }], { duration: 700 + Math.random() * 500, delay: Math.random() * 700, easing: "cubic-bezier(.4,0,.8,.6)", fill: "forwards" });
+    }
+    words.forEach(n => {
+      if (n === keep) return;
+      const x = +n.dataset.x || 0, delay = ((W / 2 - x) / W) * 520 + Math.random() * 160;
+      n.animate([
+        { transform: n.style.transform, opacity: 1 },
+        { transform: `${n.style.transform} translate(${(-W * .35).toFixed(0)}px, ${((Math.random() - .5) * 60).toFixed(0)}px) rotate(${(-8 - Math.random() * 20).toFixed(0)}deg)`, opacity: 1, offset: .35 },
+        { transform: `${n.style.transform} translate(${(-W * 1.4).toFixed(0)}px, ${((Math.random() - .5) * 220).toFixed(0)}px) rotate(${(-25 - Math.random() * 50).toFixed(0)}deg)`, opacity: 0 }
+      ], { duration: 1000 + Math.random() * 350, delay, easing: "cubic-bezier(.45,0,.85,.45)", fill: "forwards" });
+    });
+    if (keep) {
+      keep.classList.add("chosen");
+      const f = parseFloat(keep.style.fontSize) || 40, scale = Math.min(2.2, Math.max(1.2, (H * .14) / f));
+      keep.animate([{ transform: keep.style.transform }, { transform: `translate(-50%,-50%) translate(0px,${(-H * .3).toFixed(0)}px) scale(${scale.toFixed(2)})` }],
+        { duration: 1000, delay: 900, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" });
+    }
+    small.textContent = keep ? `Someone in this room said “${keep.textContent}” first.` : "Every project starts with a name.";
+    setTimeout(() => {
+      if (cur().id !== "gust") return;
+      tw.hidden = false;
+      $(".tw-big", tw).animate([{ opacity: 0, transform: "translateX(36vw) skewX(-14deg)", filter: "blur(12px)" }, { opacity: 1, transform: "none", filter: "blur(0)" }], { duration: 800, easing: "cubic-bezier(.2,1.25,.4,1)", fill: "both" });
+      small.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 600, fill: "both" });
+      const r = $(".tw-big", tw).getBoundingClientRect();
+      setTimeout(() => FX.burst(r.left + r.width / 2, r.top + r.height / 2, 60, 420), 520);
+    }, keep ? 1700 : 1350);
+  }
+
+  /* ---------- meme screens ---------- */
+  function renderMeme(s) {
+    $("#memeLine").textContent = s.line;
+    $("#memeWho").textContent = s.who;
+    const src = store.get("dtc-img-" + s.img, null);
+    $("#meme").classList.toggle("noimg", !src);
+    $("#memeImg").style.backgroundImage = src ? `url("${src}")` : "none";
+  }
+  const memeStage = $("#sMeme");
+  ["dragenter", "dragover"].forEach(t => memeStage.addEventListener(t, e => { e.preventDefault(); memeStage.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => memeStage.addEventListener(t, () => memeStage.classList.remove("over")));
+  memeStage.addEventListener("drop", e => { e.preventDefault(); loadMemeImage(e.dataTransfer.files[0]); });
+  memeStage.addEventListener("click", () => { if (!store.get("dtc-img-" + cur().img, null)) $("#memeFile").click(); });
+  $("#memeFile").addEventListener("change", e => { loadMemeImage(e.target.files[0]); e.target.value = ""; });
+  function loadMemeImage(file) {
+    const s = cur(); if (!file || !s.img || !/^image\//.test(file.type)) return;
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      store.set("dtc-img-" + s.img, c.toDataURL("image/jpeg", .86));
+      renderMeme(s);
+    };
+    img.src = url;
+  }
+  $("#bClearImgs").addEventListener("click", () => { store.del("dtc-img-meme1"); store.del("dtc-img-meme2"); if (cur().el === "sMeme") renderMeme(cur()); });
+
+  /* ---------- team names ---------- */
+  const graphemes = s => (window.Intl && Intl.Segmenter) ? [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(s)].map(x => x.segment) : Array.from(s);
+  function rowHtml(i) {
+    const name = st.teams[i];
+    return `<span class="tn">${i + 1}</span><span class="slot${name ? "" : " empty"}">${name ? esc(name) : "Waiting for a name"}</span>`;
+  }
+  function renderNames() {
+    const ol = $("#tteams");
+    ol.innerHTML = st.teams.map((n, i) => `<li data-i="${i}" class="${n ? "named" : ""}">${rowHtml(i)}</li>`).join("");
+    $$("li", ol).forEach(li => li.addEventListener("click", () => editTeam(+li.dataset.i)));
+    editing = -1;
+  }
+  function editTeam(i) {
+    if (cur().id !== "names") return;
+    if (editing >= 0 && editing !== i) { const inp = $("#tteams input"); if (inp) commitTeam(editing, inp.value); }
+    const li = $(`#tteams li[data-i="${i}"]`); if (!li || li.querySelector("input")) return;
+    editing = i;
+    const slot = $(".slot", li);
+    const inp = document.createElement("input");
+    inp.maxLength = 32; inp.value = st.teams[i]; inp.setAttribute("aria-label", `Name for team ${i + 1}`); inp.spellcheck = false;
+    slot.replaceWith(inp); inp.focus(); inp.select();
+    let done = false;
+    inp.addEventListener("keydown", e => {
+      e.stopPropagation();
+      if (e.key === "Enter") { e.preventDefault(); done = true; commitTeam(i, inp.value); }
+      else if (e.key === "Escape") { e.preventDefault(); done = true; editing = -1; li.innerHTML = rowHtml(i); }
+      else if (e.key === "Tab") { e.preventDefault(); done = true; commitTeam(i, inp.value); setTimeout(() => editTeam((i + (e.shiftKey ? 7 : 1)) % 8), 50); }
+    });
+    inp.addEventListener("blur", () => { if (!done) { done = true; commitTeam(i, inp.value); } });
+  }
+  function commitTeam(i, value) {
+    const li = $(`#tteams li[data-i="${i}"]`);
+    const name = F.cleanName(value).slice(0, 32), changed = name !== st.teams[i];
+    st.teams[i] = name; save(); editing = -1;
+    if (!li) return;
+    li.classList.toggle("named", !!name);
+    if (!name || !changed) { li.innerHTML = rowHtml(i); if (changed) broadcastTeams(); renderTeamList(); return; }
+    li.innerHTML = `<span class="tn">${i + 1}</span><span class="slot">${graphemes(name).map((g, k) => `<span class="ch" style="animation-delay:${k * 45}ms">${g === " " ? " " : esc(g)}</span>`).join("")}</span>`;
+    li.classList.remove("flash"); void li.offsetWidth; li.classList.add("flash");
+    const r = li.querySelector(".slot").getBoundingClientRect();
+    FX.burst(r.left + 8, r.top + r.height / 2, 50, 380);
+    setTimeout(() => FX.burst(r.left + Math.min(r.width, graphemes(name).length * 28), r.top + r.height / 2, 30, 300), Math.min(900, graphemes(name).length * 45 + 200));
+    broadcastTeams(); renderTeamList();
+  }
+  let teamsT = 0;
+  function broadcastTeams() { clearTimeout(teamsT); teamsT = setTimeout(() => post(topic, { v: 1, t: "teams", names: st.teams }, 4), 400); }
   function renderTeamList() {
     const ul = $("#tlist");
-    if (!roster) { ul.innerHTML = ""; return; }
-    const map = F.seatMap(roster, activeJoins());
-    if (ul.querySelector("input:focus")) {
-      map.rows.forEach(r => { const c = ul.querySelector(`[data-c="${r.ti}"]`); if (c) c.textContent = `${r.seats.filter(s => s.on).length} of ${r.seats.length} in`; });
-      return;
-    }
-    ul.innerHTML = map.rows.map(r => `<li><span class="zl">${F.rowLetter(r.ti)}</span><input data-t="${r.ti}" value="${esc(r.team.name)}" maxlength="40" aria-label="Name for ${esc(r.team.label)}" title="${esc(r.seats.map(s => s.name).join(", "))}"><span class="cnt" data-c="${r.ti}">${r.seats.filter(s => s.on).length} of ${r.seats.length} in</span></li>`).join("");
-    $$("input[data-t]", ul).forEach(inp => {
-      inp.addEventListener("keydown", e => { if (e.key === "Enter") inp.blur(); if (e.key === "Escape") { e.stopPropagation(); inp.value = roster.teams[+inp.dataset.t].name; inp.blur(); } });
-      inp.addEventListener("change", () => {
-        const t = roster.teams[+inp.dataset.t];
-        const v = F.cleanName(inp.value).slice(0, 40) || t.label;
-        if (v === t.name) return;
-        t.name = v; saveRoster(); door.dirty = true; saveDoor();
-        render();
-        if (door.open) schedulePublish();
-      });
-    });
-  }
-  function renderCheckins() {
-    const act = activeJoins();
-    const list = [...act.entries()].sort((a, b) => b[1].time - a[1].time);
-    const map = roster ? F.seatMap(roster, act) : null;
-    const nRel = Object.keys(released).filter(d => joins.has(d) && released[d] >= joins.get(d).time).length;
-    $("#ciCount").textContent = list.length ? `(${list.length})` : "";
-    $("#ciEmpty").hidden = list.length > 0;
-    $("#ciTable").hidden = list.length === 0;
-    $("#bUnrelease").hidden = nRel === 0;
-    $("#bUnrelease").textContent = `Undo ${plural(nRel, "removal", "removals")}`;
-    $("#ciBody").innerHTML = list.map(([dev, j]) => {
-      let team = j.team, tags = "";
-      if (map) {
-        const i = map.pids.indexOf(j.pid);
-        if (i >= 0) {
-          team = roster.teams[roster.people[i].team].name;
-          if ((map.claimed.get(j.pid) || []).length > 1) tags += `<span class="tag warn">on 2 phones</span>`;
-        } else {
-          const ti = roster.teams.findIndex(t => F.norm(t.label) === F.norm(j.team));
-          if (ti >= 0) { team = roster.teams[ti].name; tags += `<span class="tag">added themselves</span>`; }
-          else tags += `<span class="tag warn">team not in list</span>`;
-        }
-      }
-      return `<tr><td><b>${esc(j.n)}</b>${tags}</td><td>${esc(team)}</td><td><button type="button" class="btn" data-rel="${esc(dev)}">Remove</button></td></tr>`;
-    }).join("");
-    $$("[data-rel]", $("#ciBody")).forEach(b => b.addEventListener("click", () => {
-      const dev = b.dataset.rel, j = joins.get(dev); if (!j) return;
-      released[dev] = j.time; store.set("dtc-released", released); render();
+    if (ul.querySelector("input:focus")) return;
+    ul.innerHTML = st.teams.map((n, i) => `<li><span class="zl">${i + 1}</span><input data-t="${i}" value="${esc(n)}" maxlength="32" placeholder="Team ${i + 1}" aria-label="Name for team ${i + 1}"><span></span></li>`).join("");
+    $$("input[data-t]", ul).forEach(inp => inp.addEventListener("change", () => {
+      st.teams[+inp.dataset.t] = F.cleanName(inp.value).slice(0, 32); save(); broadcastTeams();
+      if (cur().id === "names") renderNames();
     }));
   }
-  $("#bUnrelease").addEventListener("click", () => { released = {}; store.set("dtc-released", released); render(); });
+  twoStep($("#bClearTeams"), "Click again to clear", () => { st.teams = Array(8).fill(""); save(); broadcastTeams(); renderTeamList(); if (cur().id === "names") renderNames(); });
 
+  /* ---------- panel ---------- */
+  function renderPanelHidden() {
+    const n = Object.keys(st.hidden).length, b = $("#bUnhide");
+    if (b) { b.hidden = n === 0; b.textContent = `Show ${n} hidden ${n === 1 ? "word" : "words"}`; }
+  }
+  function renderPanel() {
+    renderSteps(); renderTeamList(); renderPanelHidden();
+    $("#expected").value = st.expected;
+    $("#bSampleAns").textContent = st.sample ? "Remove sample answers" : "Add 20 sample answers";
+  }
+  $("#expected").addEventListener("change", e => { const v = Math.max(1, Math.min(500, parseInt(e.target.value, 10) || 50)); st.expected = v; e.target.value = v; save(); renderRoom(); });
+  $("#bSampleAns").addEventListener("click", () => { st.sample = !st.sample; save(); renderPanel(); drawCloud(false); renderRoom(); });
+  twoStep($("#bClearAns"), "Click again to clear", () => { st.cut = Math.floor(Date.now() / 1000) + 1; st.sample = false; st.lit = {}; st.hidden = {}; save(); drawCloud(false); renderRoom(); renderPanel(); });
+  const unhide = document.createElement("button");
+  unhide.type = "button"; unhide.className = "btn quiet"; unhide.id = "bUnhide"; unhide.hidden = true;
+  $("#bClearAns").after(unhide);
+  unhide.addEventListener("click", () => { st.hidden = {}; save(); drawCloud(false); renderPanelHidden(); });
+
+  /* ---------- start ---------- */
   renderQR(false);
-  render(); connect();
-  intro.arm();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => render());
-  if (door.open && door.dirty && roster) schedulePublish();
+  connect();
+  goStage(st.stage, { load: true, instant: true });
+  renderRoom();
+  if (st.stage === 0) intro.arm();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (cur().el === "sQ1" && cur().id !== "gust") drawCloud(false); });
 }
-
 /* ================= PHONE ================= */
 function phone(topic) {
   $("#phone").hidden = false;
   $$("[data-fan]").forEach(el => { el.innerHTML = fanSvg(RED, INK); });
   let dev = store.get("dtc-dev", null);
   if (!/^[a-z0-9]{6,24}$/.test(dev || "")) { dev = rand(10); store.set("dtc-dev", dev); }
-  const MEKEY = "dtc-me-" + topic;
-  let me = store.get(MEKEY, null);
-  const asm = F.rosterAssembler();
-  let roster = null, pids = [], screen = "", pick = null;
-  const joins = new Map();
+  const MINE = "dtc-ans-" + topic;
+  const mine = store.get(MINE, {});
+  let stage = null, stageTime = 0, sending = false;
+  const MAX = 3;
 
-  function show(id) { ["sWait", "sPick", "sConfirm", "sGuest", "sDone"].forEach(s => { $("#" + s).hidden = s !== id; }); screen = id; }
-  function decide() {
-    if (me) { renderDone(); if (screen !== "sDone") show("sDone"); return; }
-    if (!roster) { show("sWait"); return; }
-    if (screen === "sWait" || !screen) { show("sPick"); renderResults(); }
+  function show(id) { ["sWait", "sAsk"].forEach(s => { $("#" + s).hidden = s !== id; }); }
+  function render() {
+    if (!stage || !stage.ask) {
+      show("sWait");
+      $("#waitTitle").textContent = "You're in";
+      $("#waitSub").textContent = stage ? "Eyes on the big screen. Questions appear here when it's time to answer." : "The first question appears here in a moment.";
+      return;
+    }
+    const q = stage.ask, list = mine[q] || [];
+    show("sAsk");
+    $("#askPrompt").textContent = stage.prompt || "Your answer";
+    $("#sent").innerHTML = list.map(t => `<li>${esc(t)}</li>`).join("");
+    const full = list.length >= MAX;
+    $("#askForm").hidden = full;
+    if (full) $("#askLine").textContent = `That's ${MAX} answers. Watch them land on the big screen.`;
+    else if (!sending) $("#askLine").textContent = list.length ? `Sent. You can add ${MAX - list.length} more.` : "";
+    $("#bSend").textContent = list.length ? "Send another" : "Send";
   }
-  const claimedByOthers = pid => [...joins].some(([d, j]) => d !== dev && j.pid === pid);
 
   subscribe(topic, (p, time) => {
-    if (p.t === "roster") {
-      const r = asm.add(p);
-      if (r) {
-        roster = r; pids = r.people.map(x => F.pidFor(x.name, r.teams[x.team].label));
-        decide();
-        if (screen === "sPick") renderResults();
-        if (screen === "sDone") renderDone();
-      }
-    } else if ((p.t === "join" || p.t === "leave") && p.d) {
-      const d = String(p.d).slice(0, 24), prev = joins.get(d);
-      if (prev && prev.time > time) return;
-      if (p.t === "join") joins.set(d, { pid: String(p.pid || ""), team: F.cleanName(p.team), time }); else joins.delete(d);
-      if (screen === "sDone") renderDone();
-    }
+    if (p.t === "stage" && time >= stageTime) { stageTime = time; stage = p; render(); }
   }, () => {});
 
-  /* find your name */
-  const q = $("#q");
-  q.addEventListener("input", renderResults);
-  function renderResults() {
-    if (!roster) return;
-    const v = q.value.trim(), ul = $("#results");
-    if (!v) { ul.innerHTML = ""; $("#noMatch").hidden = true; return; }
-    const hits = F.searchPeople(roster.people, v, 8);
-    $("#noMatch").hidden = hits.length > 0;
-    ul.innerHTML = hits.map(i => {
-      const p = roster.people[i], t = roster.teams[p.team];
-      return `<li><button type="button" data-i="${i}"><span class="nm">${esc(p.name)}</span><span class="tm">${esc(teamText(t))}${claimedByOthers(pids[i]) ? `<span class="taken">already checked in</span>` : ""}</span></button></li>`;
-    }).join("");
-    $$("button[data-i]", ul).forEach(b => b.addEventListener("click", () => choose(+b.dataset.i)));
-  }
-  function choose(i) {
-    const p = roster.people[i], t = roster.teams[p.team];
-    pick = { pid: pids[i], n: p.name, team: t.label };
-    $("#cName").textContent = p.name;
-    $("#cTeam").textContent = teamText(t);
-    $("#cTaken").hidden = !claimedByOthers(pick.pid);
-    show("sConfirm");
-    $("#bYes").focus();
-  }
-  $("#bBack").addEventListener("click", () => { show("sPick"); q.focus(); });
-  $("#bYes").addEventListener("click", () => { if (pick) checkIn({ ...pick, g: 0 }); });
-
-  /* not on the list */
-  $("#bNotListed").addEventListener("click", () => {
-    if (!roster) return;
-    $("#gTeam").innerHTML = roster.teams.map(t => `<option value="${esc(t.label)}">${esc(teamText(t))}</option>`).join("");
-    if (q.value.trim() && !$("#gName").value) $("#gName").value = q.value.trim();
-    show("sGuest"); $("#gName").focus();
-  });
-  $("#bGuestBack").addEventListener("click", () => show("sPick"));
-  $("#bGuestGo").addEventListener("click", () => {
-    const n = F.cleanName($("#gName").value), team = $("#gTeam").value;
-    if (!n) { $("#gName").focus(); return; }
-    if (!team) return;
-    checkIn({ pid: F.pidFor(n, team), n, team, g: 1 });
+  $("#askForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!stage || !stage.ask || sending) return;
+    const q = stage.ask, inp = $("#ans"), text = cleanAns(inp.value);
+    if (!text) { inp.focus(); return; }
+    if ((mine[q] || []).length >= MAX) return;
+    sending = true; $("#bSend").disabled = true; $("#askLine").textContent = "Sending";
+    const ok = await post(topic, { v: 1, t: "ans", q, d: dev, text }, 5);
+    sending = false; $("#bSend").disabled = false;
+    if (ok) {
+      mine[q] = (mine[q] || []).concat(text); store.set(MINE, mine);
+      inp.value = ""; render();
+      if (!$("#askForm").hidden) inp.focus();
+    } else $("#askLine").textContent = "Couldn't send. Check your mobile data and try again.";
   });
 
-  /* checked in */
-  function checkIn(m) {
-    me = { ...m, sent: false }; store.set(MEKEY, me);
-    show("sDone"); renderDone();
-    send();
-  }
-  async function send() {
-    if (!me) return;
-    $("#sendLine").textContent = "Checking you in";
-    const ok = await post(topic, { v: 1, t: "join", d: dev, pid: me.pid, n: me.n, team: me.team, g: me.g ? 1 : 0 }, 6);
-    if (!me) return;
-    if (ok) { me.sent = true; store.set(MEKEY, me); joins.set(dev, { pid: me.pid, team: me.team, time: Math.floor(Date.now() / 1000) }); $("#sendLine").textContent = ""; renderDone(); }
-    else {
-      $("#sendLine").innerHTML = `Couldn't reach the room. Check your mobile data, then <button type="button" class="textbtn" id="bRetry">try again</button>.`;
-      $("#bRetry").addEventListener("click", send);
-    }
-  }
-  function renderDone() {
-    if (!me) return;
-    $("#dName").textContent = me.n;
-    let t = null, ti = -1;
-    if (roster) {
-      const i = pids.indexOf(me.pid);
-      ti = i >= 0 ? roster.people[i].team : roster.teams.findIndex(x => F.norm(x.label) === F.norm(me.team));
-      if (ti >= 0) t = roster.teams[ti];
-    }
-    $("#dTeam").textContent = t ? teamText(t) : me.team;
-    const inPids = new Set([...joins.values()].map(j => j.pid));
-    if (me.sent) inPids.add(me.pid);
-    let mates = [];
-    if (roster && ti >= 0) {
-      mates = roster.people.map((p, i) => ({ name: p.name, pid: pids[i], team: p.team })).filter(p => p.team === ti);
-      for (const [d, j] of joins) if (!pids.includes(j.pid) && F.norm(j.team) === F.norm(roster.teams[ti].label) && !mates.some(x => x.pid === j.pid)) mates.push({ name: d === dev ? me.n : "Guest", pid: j.pid });
-      if (!mates.some(x => x.pid === me.pid)) mates.push({ name: me.n, pid: me.pid });
-    }
-    const nIn = mates.filter(x => inPids.has(x.pid)).length, total = mates.length || 1;
-    const frac = mates.length ? nIn / total : (me.sent ? 1 : 0);
-    $("#myFan").style.setProperty("--spd", (3.4 - 3.05 * frac).toFixed(2) + "s");
-    $("#dSpeed").textContent = mates.length ? (nIn >= total ? "Your whole team is in. Full speed." : `${nIn} of ${total} from your team ${nIn === 1 ? "is" : "are"} in. Your fan speeds up as they arrive.`) : "";
-    $("#mates").innerHTML = mates.map(x => `<li class="${inPids.has(x.pid) ? "in" : ""}${x.pid === me.pid ? " me" : ""}"><span>${esc(x.name)}</span><span>${inPids.has(x.pid) ? "in" : "not yet"}</span></li>`).join("");
-  }
-  $("#bNotMe").addEventListener("click", () => {
-    const wasSent = me && me.sent;
-    me = null; store.del(MEKEY); joins.delete(dev);
-    if (wasSent) post(topic, { v: 1, t: "leave", d: dev }, 3);
-    q.value = ""; $("#results").innerHTML = ""; $("#noMatch").hidden = true; $("#sendLine").textContent = "";
-    screen = ""; decide();
-    if (screen === "sPick") q.focus();
-  });
-
-  decide();
-  if (me && !me.sent) send();
+  const HI = "dtc-hi-" + topic;
+  if (!store.get(HI, false)) post(topic, { v: 1, t: "hi", d: dev }, 5).then(ok => { if (ok) store.set(HI, true); });
+  render();
 }
+
+/* ================= ROUTE ================= */
+const route = location.hash.match(/^#join=([A-Za-z0-9_-]{6,64})$/);
+if (route) phone(route[1]); else presenter();
 })();
 </script>
 </body>
