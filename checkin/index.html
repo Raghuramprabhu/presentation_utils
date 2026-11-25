@@ -162,6 +162,8 @@ h1,h2,h3,p{margin:0}
 .pickgrid li.bump{animation:bump .6s ease-out}
 @keyframes bump{0%{background:var(--red-wash)}100%{background:transparent}}
 .pickcorner{grid-column:2;grid-row:1}
+.pickrules{grid-column:1/-1;font-weight:700;font-size:clamp(1rem,1.6vw,1.6rem);color:var(--graphite);margin:0;border-top:3px solid var(--graphite);padding-top:clamp(10px,1.8vh,20px)}
+.pickrules b{color:var(--red)}
 
 /* question screen */
 .qq{display:grid;grid-template-rows:auto 1fr auto;gap:clamp(10px,1.8vh,20px)}
@@ -321,6 +323,8 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
 .people .btn{padding:3px 10px;font-size:.8rem;box-shadow:0 2px 0 var(--steel);border-color:var(--steel)}
 .tag{display:inline-block;font-size:.75rem;font-weight:700;padding:0 6px;border-radius:3px;margin-left:6px;background:var(--steel-light);color:var(--duct)}
 .tag.warn{background:var(--red-wash);color:var(--red-deep)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.4}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--red);flex:none}
 .field{display:block;font-size:.9rem;color:var(--duct);font-weight:600}
 .field input{display:block;width:100%;margin-top:4px;border:2px solid var(--steel);border-radius:4px;padding:7px 10px;font-size:.85rem;color:var(--graphite)}
 .mini{display:flex;gap:14px;align-items:center;margin:10px 0}
@@ -479,6 +483,7 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
   <main class="stage pickstage" id="sPick" hidden>
     <h2 class="qtext">Pick your team on your phone</h2>
     <ol class="pickgrid" id="pickgrid"></ol>
+    <p class="pickrules" id="pickRules"></p>
     <aside class="corner pickcorner"><div class="qr" id="qrPick"></div><p>Lost the page? Scan again.</p></aside>
   </main>
 
@@ -542,8 +547,12 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
         </div>
       </section>
       <section class="psec">
+        <h3>Scoring</h3>
+        <label class="check"><input type="checkbox" id="bonusOn"> <span><b>Bonus points.</b> +1 for every answer sent while the first sand clock runs. +2 on the reveal for a guess close to what we had in mind or the right option. Ordering round: up to +5 for being close. Turn this on before the session starts.</span></label>
+      </section>
+      <section class="psec">
         <h3>Answers</h3>
-        <p class="help">On the first question, click a word to hide it. On the light-up screen, click a word to switch it between red, grey and plain. Clear everything after rehearsal.</p>
+        <p class="help">On the first question, click a word to hide it. On the light-up screen, click a word to switch it between red, grey and plain. After rehearsal, clear everything: only answers sent after clearing count, and phones get their answers back.</p>
         <div class="acts">
           <button type="button" class="btn quiet" id="bSampleAns">Fill every question with sample answers</button>
           <button type="button" class="btn danger" id="bClearAns">Clear all answers and scores</button>
@@ -3229,7 +3238,7 @@ function subscribe(topic, onMsg, onStatus) {
     if (d.id) since = d.id;
     let p; try { p = JSON.parse(d.message); } catch (e) { return; }
     if (!p || p.v !== 1) return;
-    onMsg(p, +d.time || Math.floor(Date.now() / 1000));
+    onMsg(p, +d.time || Math.floor(Date.now() / 1000), d.id || "");
   }
   async function poll() {
     if (closed) return;
@@ -3342,6 +3351,10 @@ function presenter() {
     hidden: saved.hidden && typeof saved.hidden === "object" ? saved.hidden : {},
     mcq: saved.mcq && typeof saved.mcq === "object" ? saved.mcq : {},
     timers: saved.timers && typeof saved.timers === "object" ? saved.timers : {},
+    revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
+    bonus: !!saved.bonus,
+    cutId: typeof saved.cutId === "string" ? saved.cutId : "",
+    cutTime: saved.cutTime | 0,
     cut: saved.cut | 0,
     sample: !!saved.sample
   };
@@ -3350,6 +3363,7 @@ function presenter() {
   let base = store.get("dtc-base", null) || (isWeb ? location.origin + location.pathname : PUBLIC_BASE_GUESS);
   const joinUrl = () => base.replace(/#.*$/, "") + "#join=" + topic;
   const cur = () => STAGES[st.stage];
+  let lastId = "", lastTime = 0, pastCut = true;
   let answers = [], devices = new Set(), devTeam = new Map(), sub = null, replaying = true, replayT = 0, netT = 0, cloudT = 0;
 
   /* ---------- sample answers for rehearsal: 80-159 per question, spread over 8 teams ---------- */
@@ -3754,6 +3768,7 @@ function presenter() {
     }
     if (s.el === "sMeme") renderMeme(s, !(opts && opts.load));
     if (s.el === "sNames") renderNames();
+    if (s.reveal && (s.q || s.id === "orderr")) { const rid = s.q ? s.q.id : "order"; if (!st.revealed[rid]) { st.revealed[rid] = true; save(); } scheduleScores(); }
     if (s.el === "sQ") { renderQuestion(false); if (s.reveal && !(opts && opts.load)) revealFx(); }
     if (s.el === "sPick") { prevPick = null; renderPick(); }
     if (s.el === "sOrder") renderOrder(!(opts && opts.load), !!s.reveal);
@@ -3808,12 +3823,17 @@ function presenter() {
   /* ---------- relay ---------- */
   function connect() {
     if (sub) sub.close();
-    answers = []; devices = new Set(); devTeam = new Map();
+    answers = []; devices = new Set(); devTeam = new Map(); lastId = ""; lastTime = 0; pastCut = !st.cutId;
     replaying = true; clearTimeout(replayT);
     replayT = setTimeout(() => { replaying = false; }, 2500);
     sub = subscribe(topic, onMsg, setNet);
   }
-  function onMsg(p, time) {
+  function onMsg(p, time, id) {
+    if (id) { lastId = id; lastTime = time; }
+    /* Answers from before the last "Clear all answers" are skipped when the history replays after a reload:
+       everything up to and including the last message seen at clearing time, or anything older than it. */
+    if (!pastCut && time > st.cutTime) pastCut = true;
+    if (!pastCut) { if (id && id === st.cutId) pastCut = true; if (p.t === "ans") return; }
     const d = String(p.d || "").slice(0, 24);
     if (!d) return;
     const team = Number.isInteger(p.team) && p.team >= 0 && p.team < 8 ? p.team : null;
@@ -3830,12 +3850,13 @@ function presenter() {
       if (cur().el === "sQ1" && cur().id !== "gust") { clearTimeout(cloudT); cloudT = setTimeout(() => drawCloud(!replaying && cur().id === "q1"), 150); }
       return;
     }
-    const tm = st.timers[p.q];
-    if (tm && tm.closed && time * 1000 > tm.closedAt + 2000) return;
+    /* After a sand clock runs out, late answers are dropped (judged by when this laptop received them). */
+    const tm = st.timers[p.q], at = replaying ? time * 1000 : Date.now();
+    if (tm && tm.closed && at > tm.closedAt + 1500) return;
     if (p.q === "order") {
       const ord = Array.isArray(p.order) && p.order.length === ORDER_ITEMS.length ? p.order.map(x => ORDER_ITEMS.indexOf(String(x))) : null;
       if (!ord || ord.includes(-1) || new Set(ord).size !== ord.length) return;
-      answers.push({ d, q: "order", text: "", opt: null, order: ord, team, time });
+      answers.push({ d, q: "order", text: "", opt: null, order: ord, team, time, rt: replaying ? time * 1000 : Date.now() });
       scheduleRoom(); scheduleScores();
       if (cur().id === "order") { clearTimeout(cloudT); cloudT = setTimeout(() => renderOrder(!replaying, false), 250); }
       return;
@@ -3844,7 +3865,7 @@ function presenter() {
     const opt = Number.isInteger(p.opt) && p.opt >= 0 && p.opt < 4 ? p.opt : null;
     const text = opt === null ? cleanAns(p.text) : "";
     if (opt === null && !text) return;
-    answers.push({ d, q: p.q, text, opt, team, time });
+    answers.push({ d, q: p.q, text, opt, team, time, rt: replaying ? time * 1000 : Date.now() });
     scheduleRoom(); scheduleScores();
     const c = cur();
     if (c.el === "sQ" && c.q.id === p.q) { clearTimeout(cloudT); cloudT = setTimeout(() => renderQuestion(!replaying), 150); }
@@ -3856,7 +3877,7 @@ function presenter() {
   }
   function newSession() {
     topic = "dtc-" + rand(12); store.set("dtc-topic", topic);
-    st.cut = 0; st.hidden = {}; st.lit = {}; st.mcq = {}; st.timers = {}; st.sample = false; save();
+    st.cutId = ""; st.cutTime = 0; st.hidden = {}; st.lit = {}; st.mcq = {}; st.timers = {}; st.revealed = {}; st.sample = false; save();
     connect(); setPanel(false); goStage(0); renderRoom();
     setTimeout(() => renderQR(true), 200);
   }
@@ -3889,7 +3910,7 @@ function presenter() {
   function cloudAnswers() {
     const perDev = new Map(), out = [];
     for (const a of allAnswers()) {
-      if (a.q !== "q1" || (a.time < st.cut && !String(a.d).startsWith("smp"))) continue;
+      if (a.q !== "q1") continue;
       const n = perDev.get(a.d) || 0; if (n >= 5) continue;
       perDev.set(a.d, n + 1); out.push(a);
     }
@@ -4086,17 +4107,37 @@ function presenter() {
 
   /* ---------- scores: 1 point per answer, at most 3 per phone per question; a multiple-choice vote counts once ---------- */
   const teamName = i => st.teams[i] || `Team ${i + 1}`;
+  /* Points: 1 per answer (at most 3 per phone per question, a vote or an order counts once);
+     +1 for each answer sent while the first sand clock runs; after the reveal, +2 once per phone whose guess
+     matched what we had in mind or who voted the right option; ordering round: up to +5 by closeness. */
   function scoreState() {
-    const pts = Array(8).fill(0), per = new Map(), voted = new Set();
+    const pts = Array(8).fill(0), per = new Map(), voted = new Set(), close = new Set(), lastVote = new Map();
+    const teamOf = a => a.team !== null && a.team !== undefined ? a.team : devTeam.get(a.d);
     for (const a of allAnswers()) {
-      if (a.q === "q1" || (a.time < st.cut && a.time !== 0)) continue;
-      const team = a.team !== null && a.team !== undefined ? a.team : devTeam.get(a.d);
+      if (a.q === "q1") continue;
+      const team = teamOf(a);
       if (team === undefined || team === null) continue;
-      const k = a.d + "|" + a.q;
-      if ((a.opt !== null && a.opt !== undefined) || a.order) { if (voted.has(k)) continue; voted.add(k); }
+      const k = a.d + "|" + a.q, isVote = (a.opt !== null && a.opt !== undefined) || !!a.order;
+      if (isVote) { lastVote.set(k, a); if (voted.has(k)) continue; voted.add(k); }
       const n = per.get(k) || 0; if (n >= 3) continue;
       per.set(k, n + 1); pts[team]++;
+      if (!st.bonus) continue;
+      const tm = st.timers[a.q];
+      if (tm && tm.ends && tm.ends.length && a.rt && a.rt <= tm.ends[0]) pts[team]++;
+      const q = QBYID.get(a.q);
+      if (q && st.revealed[a.q] && a.text && !close.has(k) && hits(q, keyOf(a.text))) { close.add(k); pts[team] += 2; }
     }
+    if (st.bonus) lastVote.forEach((a, k) => {
+      if (!st.revealed[a.q] || close.has(k)) return;
+      const team = teamOf(a); if (team === undefined || team === null) return;
+      if (a.order) {
+        const dist = a.order.reduce((sum, item, pos) => sum + Math.abs(pos - item), 0);
+        pts[team] += Math.max(0, 5 - Math.ceil(dist / 4));
+      } else {
+        const q = QBYID.get(a.q);
+        if (q && shuffled(q.mcq, q.id)[a.opt] === q.mcq[0]) { close.add(k); pts[team] += 2; }
+      }
+    });
     return pts;
   }
   let prevPts = null, scoresT = 0, lastScoresSent = "";
@@ -4180,7 +4221,7 @@ function presenter() {
         vis.style.backgroundImage = src ? `url("${src}")` : "none";
       }
     }
-    const mine = allAnswers().filter(a => a.q === q.id && (a.time >= st.cut || a.time === 0));
+    const mine = allAnswers().filter(a => a.q === q.id);
     $("#qCount").textContent = mine.length;
     const rv = $("#qReveal");
     if (s.reveal) { $("#rvA").textContent = q.answer; $("#rvB").textContent = q.also ? `Also fair: ${q.also}` : ""; rv.hidden = false; }
@@ -4213,6 +4254,7 @@ function presenter() {
   function renderPick() {
     const counts = Array(8).fill(0); devTeam.forEach(t => counts[t]++);
     if (st.sample) counts.forEach((_, i) => { counts[i] += 9 + (i * 5) % 8; });
+    $("#pickRules").innerHTML = st.bonus ? "1 point for every answer. <b>+1</b> if you answer inside the first sand clock. <b>+2</b> if you're close to what we had in mind." : "1 point for every answer. The more your team plays, the more it scores.";
     $("#pickgrid").innerHTML = counts.map((n, i) => `<li class="${prevPick && n > prevPick[i] ? "bump" : ""}"><span class="pn">Team ${i + 1}</span><span class="pt">${esc(st.teams[i] || `Team ${i + 1}`)}</span><span class="pc">${plural(n, "phone", "phones")}</span></li>`).join("");
     prevPick = counts;
   }
@@ -4222,7 +4264,7 @@ function presenter() {
      slides into the order we had in mind and names the team that came closest. */
   function orderSubs() {
     const last = new Map();
-    allAnswers().forEach(a => { if (a.q === "order" && a.order && (a.time >= st.cut || a.time === 0)) last.set(a.d, a); });
+    allAnswers().forEach(a => { if (a.q === "order" && a.order) last.set(a.d, a); });
     return [...last.values()];
   }
   function closestTeam(subs) {
@@ -4443,7 +4485,14 @@ function presenter() {
   function renderPanel() {
     renderSteps(); renderTeamList(); renderPanelHidden(); renderPics();
     $("#bSampleAns").textContent = st.sample ? "Remove sample answers" : "Fill every question with sample answers";
+    $("#bonusOn").checked = st.bonus;
   }
+  $("#bonusOn").addEventListener("change", e => {
+    st.bonus = e.target.checked; save(); scheduleScores();
+    if (cur().el === "sQ") renderBoard();
+    if (cur().el === "sPick") renderPick();
+    if (cur().el === "sScores") renderFinals();
+  });
   $("#bSampleAns").addEventListener("click", () => {
     st.sample = !st.sample; save(); renderPanel(); renderRoom();
     const c = cur();
@@ -4452,7 +4501,16 @@ function presenter() {
     if (c.el === "sPick") renderPick();
     if (c.el === "sScores") renderFinals();
   });
-  twoStep($("#bClearAns"), "Click again to clear", () => { st.cut = Math.floor(Date.now() / 1000) + 1; st.sample = false; st.lit = {}; st.hidden = {}; st.mcq = {}; save(); drawCloud(false); renderRoom(); renderPanel(); if (cur().el === "sQ") renderQuestion(false); scheduleScores(); });
+  /* Clear: drop every answer, vote and order received so far (kept out after a reload too, by remembering the
+     last message seen), reset timers, reveals and samples, and tell phones to forget what they sent. */
+  twoStep($("#bClearAns"), "Click again to clear", () => {
+    answers = []; st.cutId = lastId; st.cutTime = lastTime; pastCut = true;
+    st.sample = false; st.lit = {}; st.hidden = {}; st.mcq = {}; st.revealed = {}; st.timers = {}; save();
+    $$(".w", $("#cloud")).forEach(n => n.remove()); $$(".w", $("#gcloud")).forEach(n => n.remove());
+    post(topic, { v: 1, t: "reset" }, 4);
+    lastScoresSent = ""; prevPts = null;
+    goStage(st.stage, { instant: true }); renderRoom(); renderPanel(); scheduleScores();
+  });
   const unhide = document.createElement("button");
   unhide.type = "button"; unhide.className = "btn quiet"; unhide.id = "bUnhide"; unhide.hidden = true;
   $("#bClearAns").after(unhide);
@@ -4583,7 +4641,19 @@ function phone(topic) {
     if (!ok) $("#askLine").textContent = "Couldn't send. Check your mobile data and try again.";
   });
 
-  subscribe(topic, (p, time) => {
+  const RESET = "dtc-reset-" + topic;
+  subscribe(topic, (p, time, id) => {
+    if (p.t === "reset") {
+      /* The presenter cleared all answers: forget what this phone sent (once per reset), keep the team. */
+      if (id && store.get(RESET, "") !== id) {
+        store.set(RESET, id);
+        Object.keys(mine).forEach(k => delete mine[k]); Object.keys(votes).forEach(k => delete votes[k]);
+        ord = { picked: [], sent: false };
+        store.set(MINE, mine); store.set(VOTES, votes); store.set(ORD, ord);
+        pts = null; render();
+      }
+      return;
+    }
     if (p.t === "stage" && time >= stageTime) {
       stageTime = time; stage = p;
       if (Array.isArray(p.teams) && p.teams.length === 8) teams = p.teams.map(t => cleanAns(t).slice(0, 32) || "");
