@@ -488,7 +488,7 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
         <h3>Answers</h3>
         <p class="help">On the first question, click a word to hide it. On the light-up screen, click a word to switch it between red, grey and plain. Clear everything after rehearsal.</p>
         <div class="acts">
-          <button type="button" class="btn quiet" id="bSampleAns">Add 20 sample answers</button>
+          <button type="button" class="btn quiet" id="bSampleAns">Fill every question with sample answers</button>
           <button type="button" class="btn danger" id="bClearAns">Clear all answers and scores</button>
         </div>
       </section>
@@ -3237,7 +3237,7 @@ const QUESTIONS = [
   { id: "q8", kind: "pic", label: "Paati's recipe KT (video)", answer: "Knowledge transfer (KT)", also: "", accept: ["knowledge", "kt", "transfer"], mcq: ["Knowledge transfer", "Documentation", "Onboarding", "Recipe API"] },
   { id: "q9", kind: "pic", label: "The single that brings up the century (video)", answer: "Milestone", also: "Singleton, for the developers. Incremental delivery.", accept: ["milestone", "singleton", "increment"], mcq: ["Milestone", "Deployment", "Target achieved", "Sprint review"] },
   { id: "q10", kind: "riddle", label: "Riddle: regression", text: "You fixed one thing and I woke up somewhere else. I'm the ghost of a bug you already killed.", answer: "Regression", also: "", accept: ["regress"], mcq: ["Regression", "Recursion", "Rollback", "Memory leak"] },
-  { id: "q11", kind: "pic", label: "Exam night at 3 AM", answer: "Deadline", also: "Crunch time", accept: ["deadline", "dead line", "crunch"], mcq: ["Deadline", "Night shift", "Hackathon", "Overtime"] },
+  { id: "q11", kind: "riddle", label: "Riddle: deadline", text: "Everyone agrees on me at the start and fears me at the end. You see me coming for weeks, yet I always arrive early. Move me once, and everyone wants me moved again.", answer: "Deadline", also: "Release date, go-live, due date, sprint end, even exam day", accept: ["deadline", "dead line", "due", "release date", "release", "go live", "golive", "go-live", "sprint end", "timeline", "crunch", "eta", "cutoff", "cut off", "exam", "target date", "launch"], mcq: ["Deadline", "Timesheet", "Stand-up", "Appraisal"] },
   { id: "q12", kind: "pic", label: "Censor board", answer: "Code review", also: "", accept: ["review"], mcq: ["Code review", "Compliance check", "Release notes", "Access control"] },
   { id: "q13", kind: "pic", label: "Relay baton pass", answer: "Handover", also: "", accept: ["handover", "hand over", "handoff", "hand off"], mcq: ["Handover", "API call", "Load balancing", "Relay server"] },
   { id: "q14", kind: "pic", label: "Traffic signal", answer: "Go/no-go decision", also: "Conditional go, for the yellow", accept: ["go", "no go", "nogo", "go/no", "conditional"], mcq: ["Go/no-go decision", "Traffic routing", "Feature flag", "Circuit breaker"] },
@@ -3279,6 +3279,30 @@ function presenter() {
   const joinUrl = () => base.replace(/#.*$/, "") + "#join=" + topic;
   const cur = () => STAGES[st.stage];
   let answers = [], devices = new Set(), devTeam = new Map(), sub = null, replaying = true, replayT = 0, netT = 0, cloudT = 0;
+
+  /* ---------- sample answers for rehearsal: 80-159 per question, spread over 8 teams ---------- */
+  const POOL_IT = ["agile", "sprint", "jira", "bug", "deploy", "cloud", "api", "refactor", "standup", "scrum", "kanban", "devops", "pipeline", "ci/cd", "docker", "kubernetes", "git", "commit", "branch", "hotfix", "patch", "release", "testing", "qa", "uat", "prod", "server", "database", "cache", "latency", "outage", "ticket", "sla", "backlog", "story points", "retro", "demo", "pilot", "prototype", "sandbox", "merge", "review", "approval", "escalation", "handover", "kt", "documentation", "onboarding", "milestone", "roadmap", "deadline", "scope", "requirement", "design", "architecture", "microservice", "monolith", "legacy", "tech debt", "regression", "rollback", "feature flag", "go live", "launch", "mvp", "stakeholder", "client call", "manager", "coffee", "chai", "biryani", "weekend", "overtime", "wfh", "meeting", "excel", "powerpoint", "chatgpt", "copilot", "teams call", "on mute", "it works on my machine", "production issue", "server down", "night shift"];
+  const sampleMemo = new Map();
+  function samplesFor(qid) {
+    if (sampleMemo.has(qid)) return sampleMemo.get(qid);
+    const q = QBYID.get(qid);
+    const pool = qid === "q1" ? SAMPLE_ANS.concat(["plan", "requirements", "understand", "discuss", "research", "brainstorm", "scope", "goal", "ask questions", "define the problem", "kickoff", "estimate", "timeline", "budget", "analyse", "sweet"])
+      : q.mcq.concat(q.accept.filter(a => a.length > 2), [q.answer]);
+    let h = F.hash(qid + "-sample") || 1;
+    const rnd = () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return h / 4294967296; };
+    const n = 80 + (F.hash(qid) % 80), out = [];
+    for (let i = 0; i < n; i++) {
+      const arr = rnd() < .55 ? pool : POOL_IT;
+      const text = cleanAns(arr[Math.floor(arr.length * Math.pow(rnd(), 2.2))]);
+      out.push({ d: "smp" + Math.floor(i / 2), q: qid, text, opt: null, team: Math.floor(i / 2) % 8, time: 0 });
+    }
+    if (qid !== "q1") for (let j = 0; j < 40; j++) out.push({ d: "smv" + j, q: qid, text: "", opt: Math.floor(4 * Math.pow(rnd(), 1.4)), team: j % 8, time: 0 });
+    sampleMemo.set(qid, out);
+    return out;
+  }
+  let allSampleMemo = null;
+  const allSamples = () => allSampleMemo || (allSampleMemo = ["q1"].concat(QUESTIONS.map(q => q.id)).flatMap(samplesFor));
+  const allAnswers = () => st.sample ? answers.concat(allSamples()) : answers;
 
   /* ---------- sparks on the white page ---------- */
   const FX = (() => {
@@ -3743,7 +3767,7 @@ function presenter() {
   let roomT = 0;
   function scheduleRoom() { if (roomT) return; roomT = setTimeout(() => { roomT = 0; renderRoom(); }, 200); }
   function renderRoom() {
-    drawDial(devices.size);
+    drawDial(devices.size + (st.sample ? 120 : 0));
     $("#ansCount").textContent = cloudAnswers().length;
   }
   function drawDial(n) {
@@ -3766,12 +3790,11 @@ function presenter() {
   /* ---------- first question: word cloud ---------- */
   function cloudAnswers() {
     const perDev = new Map(), out = [];
-    for (const a of answers) {
-      if (a.time < st.cut) continue;
+    for (const a of allAnswers()) {
+      if (a.q !== "q1" || (a.time < st.cut && !String(a.d).startsWith("smp"))) continue;
       const n = perDev.get(a.d) || 0; if (n >= 5) continue;
       perDev.set(a.d, n + 1); out.push(a);
     }
-    if (st.sample) SAMPLE_ANS.forEach((t, i) => out.push({ d: "sample" + i, text: t, time: 0 }));
     return out;
   }
   function aggregate() {
@@ -3967,8 +3990,8 @@ function presenter() {
   const teamName = i => st.teams[i] || `Team ${i + 1}`;
   function scoreState() {
     const pts = Array(8).fill(0), per = new Map(), voted = new Set();
-    for (const a of answers) {
-      if (a.q === "q1" || a.time < st.cut) continue;
+    for (const a of allAnswers()) {
+      if (a.q === "q1" || (a.time < st.cut && a.time !== 0)) continue;
       const team = a.team !== null && a.team !== undefined ? a.team : devTeam.get(a.d);
       if (team === undefined || team === null) continue;
       const k = a.d + "|" + a.q;
@@ -3998,7 +4021,7 @@ function presenter() {
     const parts = key.split(/[\s/-]+/);
     return q.accept.some(a => key === a || parts.includes(a) || (a.length >= 4 && key.includes(a)));
   }
-  function aggregateQ(list) {
+  function aggregateQ(list, limit) {
     const m = new Map(), per = new Map();
     for (const a of list) {
       if (!a.text) continue;
@@ -4008,14 +4031,14 @@ function presenter() {
       e.count++; e.forms.set(a.text, (e.forms.get(a.text) || 0) + 1);
     }
     return [...m.values()].map(e => ({ key: e.key, count: e.count, first: e.first, display: [...e.forms.entries()].sort((a, b) => b[1] - a[1])[0][0] }))
-      .sort((a, b) => b.count - a.count || a.first - b.first).slice(0, 60);
+      .sort((a, b) => b.count - a.count || a.first - b.first).slice(0, limit || 40);
   }
   function drawCloudIn(el, items, fx, isHit) {
     const W = el.clientWidth, H = el.clientHeight; if (!W || !H) return;
-    const maxF = Math.max(28, Math.min(H * .22, W * .16, 120)), minF = Math.max(14, Math.min(26, H * .06));
+    const maxF = Math.max(28, Math.min(H * .24, W * .16, 120)), minF = Math.max(16, Math.min(26, H * .07));
     let sc = 1, placed = null;
-    for (let i = 0; i < 9 && !placed; i++) { placed = place(items, W, H, Math.max(12, minF * Math.max(.6, sc)), maxF * sc, false); sc *= .86; }
-    if (!placed) placed = place(items, W, H, 12, maxF * sc, true);
+    for (let i = 0; i < 9 && !placed; i++) { placed = place(items, W, H, Math.max(14, minF * Math.max(.7, sc)), maxF * sc, false); sc *= .88; }
+    if (!placed) placed = place(items, W, H, 14, maxF * sc, true);
     const existing = new Map($$(".w", el).map(n => [n.dataset.k, n])), keep = new Set(), box = el.getBoundingClientRect();
     placed.forEach((p, i) => {
       let n = existing.get(p.key); const isNew = !n;
@@ -4059,7 +4082,7 @@ function presenter() {
         vis.style.backgroundImage = src ? `url("${src}")` : "none";
       }
     }
-    const mine = answers.filter(a => a.q === q.id && a.time >= st.cut);
+    const mine = allAnswers().filter(a => a.q === q.id && (a.time >= st.cut || a.time === 0));
     $("#qCount").textContent = mine.length;
     const rv = $("#qReveal");
     if (s.reveal) { $("#rvA").textContent = q.answer; $("#rvB").textContent = q.also ? `Also fair: ${q.also}` : ""; rv.hidden = false; }
@@ -4074,7 +4097,7 @@ function presenter() {
     } else {
       cloud.hidden = false; mcq.hidden = true;
       cloud.classList.toggle("revealed", !!s.reveal);
-      drawCloudIn(cloud, aggregateQ(mine), fx && !s.reveal, k => s.reveal && hits(q, k));
+      drawCloudIn(cloud, aggregateQ(mine, s.reveal ? 24 : 40), fx && !s.reveal, k => s.reveal && hits(q, k));
     }
     renderBoard();
   }
@@ -4091,6 +4114,7 @@ function presenter() {
   function schedulePick() { clearTimeout(pickT); pickT = setTimeout(renderPick, 150); }
   function renderPick() {
     const counts = Array(8).fill(0); devTeam.forEach(t => counts[t]++);
+    if (st.sample) counts.forEach((_, i) => { counts[i] += 9 + (i * 5) % 8; });
     $("#pickgrid").innerHTML = counts.map((n, i) => `<li class="${prevPick && n > prevPick[i] ? "bump" : ""}"><span class="pn">Team ${i + 1}</span><span class="pt">${esc(st.teams[i] || `Team ${i + 1}`)}</span><span class="pc">${plural(n, "phone", "phones")}</span></li>`).join("");
     prevPick = counts;
   }
@@ -4225,9 +4249,16 @@ function presenter() {
   }
   function renderPanel() {
     renderSteps(); renderTeamList(); renderPanelHidden(); renderPics();
-    $("#bSampleAns").textContent = st.sample ? "Remove sample answers" : "Add 20 sample answers";
+    $("#bSampleAns").textContent = st.sample ? "Remove sample answers" : "Fill every question with sample answers";
   }
-  $("#bSampleAns").addEventListener("click", () => { st.sample = !st.sample; save(); renderPanel(); drawCloud(false); renderRoom(); });
+  $("#bSampleAns").addEventListener("click", () => {
+    st.sample = !st.sample; save(); renderPanel(); renderRoom();
+    const c = cur();
+    if (c.el === "sQ1") drawCloud(false);
+    if (c.el === "sQ") renderQuestion(false);
+    if (c.el === "sPick") renderPick();
+    if (c.el === "sScores") renderFinals();
+  });
   twoStep($("#bClearAns"), "Click again to clear", () => { st.cut = Math.floor(Date.now() / 1000) + 1; st.sample = false; st.lit = {}; st.hidden = {}; st.mcq = {}; save(); drawCloud(false); renderRoom(); renderPanel(); if (cur().el === "sQ") renderQuestion(false); scheduleScores(); });
   const unhide = document.createElement("button");
   unhide.type = "button"; unhide.className = "btn quiet"; unhide.id = "bUnhide"; unhide.hidden = true;
