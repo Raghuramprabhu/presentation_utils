@@ -133,7 +133,9 @@ h1,h2,h3,p{margin:0}
 .meme.noimg .memeline{font-size:clamp(2rem,4.6vw,4.8rem)}
 .memeline::before{content:"\201C";color:var(--red)}
 .memeline::after{content:"\201D";color:var(--red)}
-.memewho{text-align:center;color:var(--red);font-weight:700;font-size:clamp(1rem,1.6vw,1.5rem);margin:0}
+.memeen{text-align:center;font-weight:600;color:var(--duct);font-size:clamp(1.1rem,2vw,2rem);line-height:1.3;max-width:40ch;margin:clamp(6px,1.2vh,14px) auto 0}
+.meme.noimg .memeen{font-size:clamp(1.3rem,2.6vw,2.6rem)}
+.memewho{margin-top:clamp(8px,1.6vh,18px) !important;text-align:center;color:var(--red);font-weight:700;font-size:clamp(1rem,1.6vw,1.5rem);margin:0}
 
 /* team names */
 .tteams{list-style:none;margin:clamp(12px,2.4vh,28px) 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(4,auto);column-gap:clamp(24px,4vw,72px);border-top:3px solid var(--graphite)}
@@ -335,6 +337,7 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
       <div class="memeimg" id="memeImg" title="Drop an image here, or click to choose one"></div>
       <figcaption>
         <p class="memeline" id="memeLine"></p>
+        <p class="memeen" id="memeEn"></p>
         <p class="memewho" id="memeWho"></p>
       </figcaption>
     </figure>
@@ -3077,8 +3080,8 @@ const STAGES = [
   { id: "join", name: "Join: QR code", el: "sJoin" },
   { id: "q1", name: "Question 1: live word cloud", el: "sQ1", ask: "q1" },
   { id: "q1lit", name: "Right answers light up", el: "sQ1" },
-  { id: "meme1", name: "Meme: Amma's line", el: "sMeme", img: "meme1", line: "எந்த ஒரு விஷயத்த பண்றதுக்கு முன்னாடியும் ஸ்வீட் சாப்பிட்டு பண்ணணும்", who: "Every Amma, before every exam" },
-  { id: "meme2", name: "Meme: Vadivelu", el: "sMeme", img: "meme2", line: "எதை பண்ணாலும் பிளான் பண்ணி தான் பண்ணணும்", who: "Vadivelu" },
+  { id: "meme1", name: "Meme: Amma's line", el: "sMeme", img: "meme1", line: "எந்த ஒரு விஷயத்த பண்றதுக்கு முன்னாடியும் ஸ்வீட் சாப்பிட்டு பண்ணணும்", en: "Before you do anything, eat something sweet first.", who: "Every Amma, before every exam" },
+  { id: "meme2", name: "Meme: Vadivelu", el: "sMeme", img: "meme2", line: "எதை பண்ணாலும் பிளான் பண்ணி தான் பண்ணணும்", en: "Whatever you do, you have to plan it first.", who: "Vadivelu" },
   { id: "again", name: "Back to the cloud: plan for what?", el: "sQ1" },
   { id: "gust", name: "The gust: Name it.", el: "sQ1" },
   { id: "names", name: "Team names", el: "sNames" }
@@ -3299,23 +3302,23 @@ function presenter() {
     }
     function assemble() {
       state = "busy";
-      const shake = [];
-      for (let i = 0; i <= 24; i++) {
-        const k = Math.sin((i / 24) * Math.PI) * (i < 18 ? i / 18 : 1), a = 14 * k;
-        shake.push({ transform: `translate(${((Math.random() - .5) * 2 * a).toFixed(1)}px,${((Math.random() - .5) * 2 * a).toFixed(1)}px) rotate(${((Math.random() - .5) * .6 * k).toFixed(2)}deg)` });
+      const shake = [], N = 64;
+      for (let i = 0; i <= N; i++) {
+        const u = i / N, k = u < .82 ? Math.pow(u / .82, 1.3) : 1 - (u - .82) / .18, a = 16 * k;
+        shake.push({ transform: `translate(${((Math.random() - .5) * 2 * a).toFixed(1)}px,${((Math.random() - .5) * 2 * a).toFixed(1)}px) rotate(${((Math.random() - .5) * .7 * k).toFixed(2)}deg)` });
       }
-      el.animate(shake, { duration: 1700, easing: "linear" });
-      at(1050, () => {
+      el.animate(shake, { duration: 4000, easing: "linear" });
+      at(2900, () => {
         fl.style.background = "radial-gradient(circle at 50% 42%,rgba(255,224,140,.95),rgba(255,170,40,.55) 42%,rgba(255,140,0,0) 75%)";
-        fl.animate([{ opacity: 0 }, { opacity: .85, offset: .3 }, { opacity: 0 }], { duration: 1700, fill: "forwards", easing: "ease-out" });
+        fl.animate([{ opacity: 0 }, { opacity: .85, offset: .3 }, { opacity: 0 }], { duration: 1900, fill: "forwards", easing: "ease-out" });
       });
-      at(1300, () => {
+      at(3300, () => {
         kill(s1);
-        s1.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1900, fill: "forwards", easing: "ease-in-out" });
-        s2.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1900, fill: "forwards", easing: "ease-in-out" });
+        s1.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 2000, fill: "forwards", easing: "ease-in-out" });
+        s2.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 2000, fill: "forwards", easing: "ease-in-out" });
         s2.firstElementChild.animate([{ transform: "scale(1.12)" }, { transform: "scale(1)", offset: .12 }, { transform: "scale(1.07)" }], { duration: 26000, fill: "forwards", easing: "cubic-bezier(.2,.7,.3,1)" });
       });
-      at(3300, () => { state = "s2"; });
+      at(5400, () => { state = "s2"; });
     }
     /* Full-screen portal: a spark slowly traces the circle, the ring spins and widens, the white world with the QR code shows through it. */
     function portal() {
@@ -3659,6 +3662,7 @@ function presenter() {
   /* ---------- meme screens ---------- */
   function renderMeme(s) {
     $("#memeLine").textContent = s.line;
+    $("#memeEn").textContent = s.en || "";
     $("#memeWho").textContent = s.who;
     const src = store.get("dtc-img-" + s.img, null);
     $("#meme").classList.toggle("noimg", !src);
