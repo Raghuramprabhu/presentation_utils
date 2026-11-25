@@ -3788,7 +3788,8 @@ function presenter() {
     if (s.ask === "order") { m.prompt = "Put these in the order they happen"; m.items = shuffled(ORDER_ITEMS, "order-round"); }
     const tm = s.ask && st.timers[s.ask];
     if (tm && tm.ends && tm.ends.length) { m.endsAt = tm.ends[tm.ends.length - 1]; m.closed = !!tm.closed; }
-    post(topic, m, 4);
+    m.pts = scoreState();
+    post(topic, m, 6);
   }
   const next = () => { if (st.stage < STAGES.length - 1) goStage(st.stage + 1); };
   const back = () => { if (st.stage > 0) goStage(st.stage - 1); };
@@ -4141,13 +4142,11 @@ function presenter() {
     return pts;
   }
   let prevPts = null, scoresT = 0, lastScoresSent = "";
+  /* Scores are not posted on every answer: the relay limits requests per network. Phones get the latest
+     scores with the next screen change (one message per press). */
   function scheduleScores() {
     clearTimeout(scoresT);
-    scoresT = setTimeout(() => {
-      if (cur().el === "sQ") renderBoard();
-      const pts = scoreState(), key = pts.join(",");
-      if (key !== lastScoresSent && !replaying) { lastScoresSent = key; post(topic, { v: 1, t: "scores", pts }, 3); }
-    }, 900);
+    scoresT = setTimeout(() => { if (cur().el === "sQ") renderBoard(); }, 600);
   }
   function renderBoard() {
     const pts = scoreState(), max = Math.max(1, ...pts), top = Math.max(...pts);
@@ -4508,7 +4507,7 @@ function presenter() {
     st.sample = false; st.lit = {}; st.hidden = {}; st.mcq = {}; st.revealed = {}; st.timers = {}; save();
     $$(".w", $("#cloud")).forEach(n => n.remove()); $$(".w", $("#gcloud")).forEach(n => n.remove());
     post(topic, { v: 1, t: "reset" }, 4);
-    lastScoresSent = ""; prevPts = null;
+    prevPts = null;
     goStage(st.stage, { instant: true }); renderRoom(); renderPanel(); scheduleScores();
   });
   const unhide = document.createElement("button");
@@ -4656,6 +4655,7 @@ function phone(topic) {
     }
     if (p.t === "stage" && time >= stageTime) {
       stageTime = time; stage = p;
+      if (Array.isArray(p.pts) && p.pts.length === 8) pts = p.pts.map(n => Math.max(0, n | 0));
       if (Array.isArray(p.teams) && p.teams.length === 8) teams = p.teams.map(t => cleanAns(t).slice(0, 32) || "");
       render();
     } else if (p.t === "teams" && Array.isArray(p.names) && p.names.length === 8) {
