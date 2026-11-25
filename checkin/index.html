@@ -120,7 +120,7 @@ h1,h2,h3,p{margin:0}
 .streaks{position:absolute;inset:0;pointer-events:none}
 .streaks i{position:absolute;right:-40%;height:3px;width:40%;border-radius:2px;background:linear-gradient(90deg,rgba(199,204,211,0),#c7ccd3 60%,rgba(199,204,211,0))}
 .twist{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
-.tw-big{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(4rem,13vw,13rem);line-height:.9;color:var(--red);margin:0}
+.tw-big{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;font-size:clamp(3.5rem,10vw,11rem);white-space:nowrap;line-height:.9;color:var(--red);margin:0}
 .tw-small{font-size:clamp(1rem,1.8vw,1.7rem);color:var(--duct);margin-top:14px;font-weight:600}
 
 /* meme slides */
@@ -3574,7 +3574,7 @@ function presenter() {
   function drawCloud(fx) {
     const el = $("#cloud"), W = el.clientWidth, H = el.clientHeight;
     const items = aggregate().slice(0, 80);
-    $("#cloudEmpty").hidden = items.length > 0;
+    $("#cloudEmpty").hidden = items.length > 0 || cur().id !== "q1";
     $("#ansCount").textContent = cloudAnswers().length;
     if (!W || !H) return;
     const maxF = Math.max(34, Math.min(H * .24, W * .13, 150)), minF = Math.max(16, Math.min(30, H * .055));
@@ -3617,6 +3617,7 @@ function presenter() {
   }
   /* The gust: wind from the right blows every word off the screen. A word that already says "name" stays. */
   function gust() {
+    $("#cloudEmpty").hidden = true;
     const cloud = $("#cloud"), W = cloud.clientWidth, H = cloud.clientHeight, words = $$(".w", cloud);
     const keep = words.filter(n => isNameWord(n.dataset.k)).sort((a, b) => (+b.dataset.c) - (+a.dataset.c))[0] || null;
     const tw = $("#twist"), small = $("#twSmall");
