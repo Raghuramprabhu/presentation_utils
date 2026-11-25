@@ -149,6 +149,85 @@ h1,h2,h3,p{margin:0}
 @keyframes chin{0%{transform:translateX(90px) rotate(14deg);opacity:0;filter:blur(8px)}100%{transform:none;opacity:1;filter:none}}
 .tteams li.flash{animation:rowflash 1.4s ease-out}
 @keyframes rowflash{0%{background:var(--red-wash)}100%{background:rgba(253,232,234,0)}}
+
+/* team pick */
+.pickstage{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;gap:clamp(12px,2vh,24px) clamp(20px,3vw,48px)}
+.pickgrid{grid-column:1/-1;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.6vw,24px);align-content:start}
+.pickgrid li{border:3px solid var(--graphite);border-radius:6px;padding:clamp(12px,2vh,22px) clamp(12px,1.2vw,20px);display:flex;flex-direction:column;gap:6px;min-height:clamp(110px,18vh,190px);transition:background .4s,border-color .4s}
+.pickgrid .pn{font-weight:900;font-size:clamp(1rem,1.4vw,1.4rem);color:var(--duct)}
+.pickgrid .pt{font-weight:900;font-stretch:118%;font-variation-settings:"wdth" 118;font-size:clamp(1.3rem,2.3vw,2.4rem);line-height:1.05;color:var(--red);overflow-wrap:anywhere}
+.pickgrid .pc{margin-top:auto;font-weight:700;color:var(--graphite);font-size:clamp(.95rem,1.3vw,1.3rem)}
+.pickgrid li.bump{animation:bump .6s ease-out}
+@keyframes bump{0%{background:var(--red-wash)}100%{background:transparent}}
+.pickcorner{grid-column:2;grid-row:1}
+
+/* question screen */
+.qq{display:grid;grid-template-rows:auto 1fr auto;gap:clamp(10px,1.8vh,20px)}
+.qhead{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(12px,1.6vw,26px)}
+.qhead .qtext{grid-column:2;grid-row:1}
+.qhead .corner{grid-column:3;grid-row:1}
+.qno{font-weight:900;font-size:clamp(1rem,1.6vw,1.6rem);color:var(--white);background:var(--red);border-radius:5px;padding:.25em .6em;white-space:nowrap}
+.qbody{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(16px,2.6vw,44px);min-height:0}
+.qvis{position:relative;min-height:40vh;border-radius:6px;background:center/contain no-repeat;display:grid;place-items:center}
+.qvis.empty{border:3px dashed var(--steel);cursor:pointer;color:var(--duct);font-weight:700}
+.qvis .riddle{font-weight:800;font-size:clamp(1.5rem,2.8vw,3rem);line-height:1.25;color:var(--graphite);border-left:8px solid var(--red);padding:0 0 0 clamp(14px,1.6vw,28px);max-width:26ch}
+.qvis.over{outline:4px dashed var(--red);outline-offset:6px}
+.qright{position:relative;min-height:40vh;display:flex;flex-direction:column;gap:clamp(8px,1.4vh,16px)}
+.qright .cloud{position:relative;flex:1;min-height:0}
+.qright .mcq{flex:1}
+.cloud.revealed .w{color:#b8bec6}
+.cloud.revealed .w.hit{color:var(--red)}
+.mcq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(8px,1.4vh,16px);justify-content:center;height:100%}
+.mcq li{position:relative;border:3px solid var(--graphite);border-radius:6px;padding:clamp(10px,1.6vh,18px) 16px;font-weight:800;font-size:clamp(1.05rem,1.7vw,1.8rem);display:flex;justify-content:space-between;gap:12px;overflow:hidden}
+.mcq li i{position:absolute;inset:0 auto 0 0;background:var(--red-wash);z-index:-1;transition:width .5s}
+.mcq li .k{color:var(--red);margin-right:10px}
+.mcq li .v{color:var(--duct);font-variant-numeric:tabular-nums}
+.mcq li.right{border-color:var(--red);background:var(--red);color:var(--white)}
+.mcq li.right .k,.mcq li.right .v{color:var(--white)}
+.reveal{border-top:6px solid var(--red);padding:clamp(10px,1.8vh,20px) 0 0}
+.rv-a{font-weight:900;font-stretch:118%;font-variation-settings:"wdth" 118;font-size:clamp(2rem,4.2vw,4.4rem);line-height:1;color:var(--red);margin:0}
+.rv-b{font-weight:600;color:var(--duct);font-size:clamp(1rem,1.6vw,1.6rem);margin:8px 0 0}
+.board{list-style:none;margin:0;padding:clamp(8px,1.2vh,14px) 0 0;display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(6px,.8vw,12px);border-top:3px solid var(--graphite)}
+.board li{display:flex;flex-direction:column;gap:4px;min-width:0}
+.board .bn{font-weight:800;font-size:clamp(.75rem,1vw,1rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board .bb{height:clamp(8px,1.3vh,14px);background:var(--steel-light);border-radius:2px;overflow:hidden}
+.board .bb i{display:block;height:100%;background:var(--red);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.board .bp{font-weight:900;font-variant-numeric:tabular-nums;font-size:clamp(.9rem,1.3vw,1.3rem)}
+.board li.lead .bn{color:var(--red)}
+.board li.up .bp{animation:bump2 .7s ease-out}
+@keyframes bump2{0%{color:var(--red);transform:scale(1.35)}100%{transform:none}}
+
+/* finale */
+.otiles{list-style:none;margin:clamp(14px,2.4vh,30px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,1.4vw,22px)}
+.otiles li{border:3px solid var(--graphite);border-radius:6px;padding:clamp(14px,2.4vh,26px) 18px;font-weight:900;font-stretch:112%;font-variation-settings:"wdth" 112;font-size:clamp(1.2rem,2.2vw,2.4rem);display:flex;align-items:center;gap:14px;transition:transform 1.1s cubic-bezier(.65,0,.25,1),background .5s,color .5s,border-color .5s}
+.otiles li .on{display:none;min-width:1.7em;height:1.7em;place-items:center;border-radius:4px;background:var(--white);color:var(--red);font-size:.8em}
+.otiles.revealed li{background:var(--red);border-color:var(--red);color:var(--white)}
+.otiles.revealed li .on{display:grid}
+.finals{list-style:none;margin:clamp(14px,2.4vh,30px) 0 0;padding:0;display:flex;flex-direction:column;gap:clamp(6px,1.2vh,14px)}
+.finals li{display:grid;grid-template-columns:2.4em minmax(120px,22vw) 1fr 4em;align-items:center;gap:clamp(10px,1.2vw,20px);font-weight:800;font-size:clamp(1rem,1.7vw,1.8rem)}
+.finals .fr{font-weight:900;color:var(--duct)}
+.finals .fn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.finals .fb{height:clamp(14px,2.4vh,26px);background:var(--steel-light);border-radius:3px;overflow:hidden}
+.finals .fb i{display:block;height:100%;width:0;background:var(--red);transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.finals .fp{font-weight:900;font-variant-numeric:tabular-nums;text-align:right}
+.finals li.first{font-size:clamp(1.3rem,2.4vw,2.6rem)}
+.finals li.first .fn,.finals li.first .fr{color:var(--red)}
+.pics{margin:6px 0 0;padding-left:0;list-style:none}
+.pics li{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--steel-light);font-size:.9rem}
+.pics .th{width:44px;height:30px;border-radius:3px;background:var(--steel-light) center/cover no-repeat}
+.pics .btn{padding:3px 10px;font-size:.8rem;box-shadow:0 2px 0 var(--steel);border-color:var(--steel)}
+.pteams{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pteams button{width:100%;min-height:72px;border:3px solid var(--graphite);border-radius:6px;background:var(--white);padding:8px;font-weight:800;font-size:1.05rem;line-height:1.15;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.pteams button small{font-weight:700;color:var(--duct);font-size:.8rem}
+.pteams button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:var(--white)}
+.pteams button[aria-pressed="true"] small{color:var(--white)}
+.myteam{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 14px;padding:8px 12px;background:var(--steel-light);border-radius:4px;font-weight:700}
+.myteam b{color:var(--red)}
+.opts{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.opts button{width:100%;text-align:left;padding:14px;border:3px solid var(--graphite);border-radius:6px;background:var(--white);font-weight:800;font-size:1.1rem}
+.opts button .k{color:var(--red);margin-right:10px}
+.opts button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:var(--white)}
+.opts button[aria-pressed="true"] .k{color:var(--white)}
 .fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40}
 .steps{margin:6px 0 0;padding-left:22px}
 .steps li{margin:2px 0}
@@ -270,6 +349,10 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
   .tteams{grid-template-columns:1fr;grid-auto-flow:row;grid-template-rows:none}
   .qstage{grid-template-columns:1fr}
   .corner{grid-column:1;grid-row:3}
+  .qbody{grid-template-columns:1fr}
+  .pickgrid{grid-template-columns:repeat(2,1fr)}
+  .board{grid-template-columns:repeat(4,1fr)}
+  .otiles{grid-template-columns:1fr 1fr}
   .intake{align-items:center;margin-bottom:28px}
   .vent{width:min(86vw,420px)}
   .zone{grid-template-columns:auto 1fr auto}
@@ -349,6 +432,38 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
     <h2 class="qtext">Your team names</h2>
     <ol class="tteams" id="tteams"></ol>
   </main>
+  <!-- Phones pick their team -->
+  <main class="stage pickstage" id="sPick" hidden>
+    <h2 class="qtext">Pick your team on your phone</h2>
+    <ol class="pickgrid" id="pickgrid"></ol>
+    <aside class="corner pickcorner"><div class="qr" id="qrPick"></div><p>Lost the page? Scan again.</p></aside>
+  </main>
+
+  <!-- Questions 2-17 -->
+  <main class="stage qq" id="sQ" hidden>
+    <div class="qhead"><span class="qno" id="qNo"></span><h2 class="qtext" id="qPrompt"></h2><aside class="corner"><div class="qr" id="qrQ"></div><p><b id="qCount">0</b> answers</p></aside></div>
+    <div class="qbody">
+      <div class="qvis" id="qVis"></div>
+      <div class="qright">
+        <div class="cloud" id="gcloud" aria-live="polite"></div>
+        <ol class="mcq" id="qMcq" hidden></ol>
+        <div class="reveal" id="qReveal" hidden><p class="rv-a" id="rvA"></p><p class="rv-b" id="rvB"></p></div>
+      </div>
+    </div>
+    <ol class="board" id="board" aria-label="Team scores"></ol>
+    <input type="file" id="qFile" accept="image/*" hidden>
+  </main>
+
+  <!-- Finale -->
+  <main class="stage orderstage" id="sOrder" hidden>
+    <h2 class="qtext" id="orderTitle">Put these in the order they happen</h2>
+    <ol class="otiles" id="otiles"></ol>
+  </main>
+  <main class="stage scorestage" id="sScores" hidden>
+    <h2 class="qtext">Final scores</h2>
+    <ol class="finals" id="finals"></ol>
+  </main>
+
   <canvas class="fx" id="fx" aria-hidden="true"></canvas>
 
   <aside class="panel" id="panel" hidden aria-label="Control panel">
@@ -365,11 +480,11 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
         </div>
       </section>
       <section class="psec">
-        <h3>First question</h3>
-        <p class="help">On the light-up screen, click any word to switch it between red (right), grey (joke) and plain.</p>
+        <h3>Answers</h3>
+        <p class="help">On the first question, click a word to hide it. On the light-up screen, click a word to switch it between red, grey and plain. Clear everything after rehearsal.</p>
         <div class="acts">
           <button type="button" class="btn quiet" id="bSampleAns">Add 20 sample answers</button>
-          <button type="button" class="btn danger" id="bClearAns">Clear answers</button>
+          <button type="button" class="btn danger" id="bClearAns">Clear all answers and scores</button>
         </div>
       </section>
       <section class="psec">
@@ -379,13 +494,17 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
         <div class="acts" style="margin-top:12px"><button type="button" class="btn danger" id="bClearTeams">Clear team names</button></div>
       </section>
       <section class="psec">
+        <h3>Question pictures</h3>
+        <p class="help">Choose a picture for each question, or drop it onto the question screen. Pictures stay on this laptop. <kbd>M</kbd> on a question switches phones to multiple choice.</p>
+        <ol class="pics" id="pics"></ol>
+      </section>
+      <section class="psec">
         <h3>Meme pictures</h3>
         <p class="help">On a meme screen, drop a picture onto it or click the empty frame. Pictures stay on this laptop.</p>
         <div class="acts"><button type="button" class="btn quiet" id="bClearImgs">Remove meme pictures</button></div>
       </section>
       <section class="psec">
         <h3>Session</h3>
-        <label class="field">People expected in the room<input id="expected" type="number" min="1" max="500" inputmode="numeric"></label>
         <div class="mini"><div class="qr" id="qrSmall"></div><div><p class="code" id="sessCode"></p><p class="url" id="urlSmall"></p></div></div>
         <details>
           <summary>Advanced</summary>
@@ -421,13 +540,22 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
       <p class="sub" id="waitSub">Eyes on the big screen. Questions appear here when it's time to answer.</p>
     </section>
 
+    <section id="sTeam" hidden>
+      <h1>Which team are you?</h1>
+      <p class="sub">Tap your team. Your answers will count for them.</p>
+      <ul class="pteams" id="pteams"></ul>
+      <p class="pfoot" id="teamBack" hidden><button type="button" class="textbtn" id="bTeamBack">Back to the question</button></p>
+    </section>
+
     <section id="sAsk" hidden>
+      <div class="myteam" id="myTeam" hidden><span>Team <b id="myTeamName"></b></span><button type="button" class="textbtn" id="bChangeTeam">Change</button></div>
       <h1 id="askPrompt"></h1>
       <form id="askForm" autocomplete="off">
         <input id="ans" class="find" maxlength="28" autocapitalize="none" spellcheck="false" placeholder="Your answer" aria-label="Your answer" enterkeyhint="send">
         <div class="stack"><button type="submit" class="btn red" id="bSend">Send</button></div>
       </form>
       <p class="sendline" id="askLine"></p>
+      <ul class="opts" id="opts" hidden></ul>
       <ul class="sent" id="sent"></ul>
     </section>
   </div>
@@ -3086,6 +3214,40 @@ const STAGES = [
   { id: "gust", name: "The gust: Name it.", el: "sQ1" },
   { id: "names", name: "Team names", el: "sNames" }
 ];
+
+/* Questions 2-17 in the Energy Curve order. kind "pic" shows the presenter's picture, "riddle" shows text.
+   accept: roots that count as the answer when lighting up guesses; mcq: options, the first is the answer (shuffled on screen). */
+const QUESTIONS = [
+  { id: "q2", kind: "pic", label: "Mudhalvan: Arjun as CM for a day", answer: "Proof of concept", also: "Pilot", accept: ["proof of concept", "poc", "pilot", "proof"], mcq: ["Proof of concept", "Admin access", "Sandbox", "Session timeout"] },
+  { id: "q3", kind: "pic", label: "Test cricket cover drive", answer: "Test coverage", also: "Testing", accept: ["test", "coverage"], mcq: ["Test coverage", "Batch processing", "Hard drive", "Boundary testing"] },
+  { id: "q4", kind: "pic", label: "Sundara Travels: polishing the bus", answer: "Backlog grooming", also: "Refinement", accept: ["groom", "refine", "backlog"], mcq: ["Backlog grooming", "Refactoring", "Rebranding", "Hotfix"] },
+  { id: "q5", kind: "riddle", label: "Riddle: technical debt", text: "You take me on to move fast. I charge interest every sprint. The more urgently you fix things, the more of me you leave behind.", answer: "Technical debt", also: "", accept: ["debt", "tech debt"], mcq: ["Technical debt", "Memory leak", "Scope creep", "Bug backlog"] },
+  { id: "q6", kind: "pic", label: "Kathipara traffic merge", answer: "Merge", also: "Merge conflict, for the honking", accept: ["merge"], mcq: ["Merge", "Load balancing", "Traffic routing", "Deadlock"] },
+  { id: "q7", kind: "pic", label: "Groot and Stormbreaker", answer: "Hotfix", also: "Workaround, patch", accept: ["hotfix", "hot fix", "workaround", "patch", "quick fix", "fix"], mcq: ["Hotfix", "Integration", "Dependency", "Refactor"] },
+  { id: "q8", kind: "pic", label: "Grandma's recipe", answer: "Knowledge transfer (KT)", also: "", accept: ["knowledge", "kt", "transfer"], mcq: ["Knowledge transfer", "Documentation", "Onboarding", "Recipe API"] },
+  { id: "q9", kind: "pic", label: "The single that brings up the century", answer: "Milestone", also: "Singleton, for the developers. Incremental delivery.", accept: ["milestone", "singleton", "increment"], mcq: ["Milestone", "Deployment", "Target achieved", "Sprint review"] },
+  { id: "q10", kind: "riddle", label: "Riddle: regression", text: "You fixed one thing and I woke up somewhere else. I'm the ghost of a bug you already killed.", answer: "Regression", also: "", accept: ["regress"], mcq: ["Regression", "Recursion", "Rollback", "Memory leak"] },
+  { id: "q11", kind: "pic", label: "Exam night at 3 AM", answer: "Deadline", also: "Crunch time", accept: ["deadline", "dead line", "crunch"], mcq: ["Deadline", "Night shift", "Hackathon", "Overtime"] },
+  { id: "q12", kind: "pic", label: "Censor board", answer: "Code review", also: "", accept: ["review"], mcq: ["Code review", "Compliance check", "Release notes", "Access control"] },
+  { id: "q13", kind: "pic", label: "Relay baton pass", answer: "Handover", also: "", accept: ["handover", "hand over", "handoff", "hand off"], mcq: ["Handover", "API call", "Load balancing", "Relay server"] },
+  { id: "q14", kind: "pic", label: "Traffic signal", answer: "Go/no-go decision", also: "Conditional go, for the yellow", accept: ["go", "no go", "nogo", "go/no", "conditional"], mcq: ["Go/no-go decision", "Traffic routing", "Feature flag", "Circuit breaker"] },
+  { id: "q15", kind: "pic", label: "DRS review", answer: "Escalation", also: "Rollback, if it's overturned", accept: ["escalat", "rollback", "roll back"], mcq: ["Escalation", "Code review", "Audit", "Approval"] },
+  { id: "q16", kind: "pic", label: "Tiger Muthuvel Pandian", answer: "MVP: minimum viable product", also: "Not most valuable player", accept: ["mvp", "minimum viable", "viable"], mcq: ["Minimum viable product", "Most valuable player", "Model view presenter", "Master volume plan"] },
+  { id: "q17", kind: "pic", label: "Kabali walks out", answer: "Release", also: "Going live", accept: ["release", "live", "launch", "deploy", "production"], mcq: ["Release", "Restart", "Reboot", "Recovery"] }
+];
+const ORDER_ITEMS = ["Proof of concept", "Grooming", "Code review", "Merge", "Test coverage", "Go/no-go", "Release", "Hotfix", "Handover"];
+QUESTIONS.forEach((q, i) => {
+  q.n = i + 2;
+  q.prompt = q.kind === "riddle" ? `Question ${q.n}: what am I?` : `Question ${q.n}: which IT term is this?`;
+  STAGES.push({ id: q.id, name: `Q${q.n}: ${q.label}`, el: "sQ", q, ask: q.id });
+  STAGES.push({ id: q.id + "r", name: `Q${q.n} answer`, el: "sQ", q, reveal: true });
+});
+STAGES.splice(STAGES.findIndex(s => s.id === "names") + 1, 0, { id: "pick", name: "Phones pick their team", el: "sPick", pick: true });
+STAGES.push({ id: "order", name: "Finale: put it in order", el: "sOrder" });
+STAGES.push({ id: "orderr", name: "Finale: the right order", el: "sOrder", reveal: true });
+STAGES.push({ id: "scores", name: "Final scoreboard", el: "sScores" });
+const QBYID = new Map(QUESTIONS.map(q => [q.id, q]));
+function shuffled(arr, seed) { const a = arr.slice(); let h = F.hash(seed); for (let i = a.length - 1; i > 0; i--) { h = Math.imul(h ^ (h >>> 15), 2246822519) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* ================= PRESENTER ================= */
 function presenter() {
   $("#presenter").hidden = false;
@@ -3097,7 +3259,7 @@ function presenter() {
     teams: Array.isArray(saved.teams) && saved.teams.length === 8 ? saved.teams.map(t => F.cleanName(t).slice(0, 32)) : Array(8).fill(""),
     lit: saved.lit && typeof saved.lit === "object" ? saved.lit : {},
     hidden: saved.hidden && typeof saved.hidden === "object" ? saved.hidden : {},
-    expected: saved.expected > 0 ? saved.expected : 50,
+    mcq: saved.mcq && typeof saved.mcq === "object" ? saved.mcq : {},
     cut: saved.cut | 0,
     sample: !!saved.sample
   };
@@ -3106,7 +3268,7 @@ function presenter() {
   let base = store.get("dtc-base", null) || (isWeb ? location.origin + location.pathname : PUBLIC_BASE_GUESS);
   const joinUrl = () => base.replace(/#.*$/, "") + "#join=" + topic;
   const cur = () => STAGES[st.stage];
-  let answers = [], devices = new Set(), sub = null, replaying = true, replayT = 0, netT = 0, cloudT = 0;
+  let answers = [], devices = new Set(), devTeam = new Map(), sub = null, replaying = true, replayT = 0, netT = 0, cloudT = 0;
 
   /* ---------- sparks on the white page ---------- */
   const FX = (() => {
@@ -3167,7 +3329,7 @@ function presenter() {
   let animToken = 0;
   function renderQR(animate) {
     const svg = qrSvg(joinUrl());
-    $("#qrBig").innerHTML = svg; $("#qrSmall").innerHTML = svg; $("#qrCorner").innerHTML = svg;
+    $("#qrBig").innerHTML = svg; $("#qrSmall").innerHTML = svg; $("#qrCorner").innerHTML = svg; $("#qrPick").innerHTML = svg; $("#qrQ").innerHTML = svg;
     const short = joinUrl().replace(/^https?:\/\//, "");
     $("#urlBig").textContent = short; $("#urlSmall").textContent = short;
     $("#sessCode").textContent = "Session " + topic;
@@ -3434,14 +3596,21 @@ function presenter() {
     }
     if (s.el === "sMeme") renderMeme(s);
     if (s.el === "sNames") renderNames();
+    if (s.el === "sQ") { renderQuestion(false); if (s.reveal && !(opts && opts.load)) revealFx(); }
+    if (s.el === "sPick") { prevPick = null; renderPick(); }
+    if (s.el === "sOrder") renderOrder(!(opts && opts.load), !!s.reveal);
+    if (s.el === "sScores") renderFinals();
     if (s.el === "sJoin" && prev && prev.id !== "join" && !(opts && opts.load)) renderQR(false);
     renderSteps();
     clearTimeout(stageT);
     stageT = setTimeout(broadcastStage, opts && opts.load ? 600 : 250);
   }
   function broadcastStage() {
-    const s = cur();
-    post(topic, { v: 1, t: "stage", id: s.id, ask: s.ask || null, prompt: s.ask === "q1" ? Q1_PROMPT : "" }, 4);
+    const s = cur(), q = s.q;
+    const m = { v: 1, t: "stage", id: s.id, ask: s.ask || null, pick: !!s.pick, teams: st.teams, prompt: "" };
+    if (s.ask === "q1") m.prompt = Q1_PROMPT;
+    if (q && s.ask) { m.prompt = q.prompt; if (st.mcq[q.id]) m.mcq = shuffled(q.mcq, q.id); }
+    post(topic, m, 4);
   }
   const next = () => { if (st.stage < STAGES.length - 1) goStage(st.stage + 1); };
   const back = () => { if (st.stage > 0) goStage(st.stage - 1); };
@@ -3467,27 +3636,44 @@ function presenter() {
     else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); back(); }
     else if (e.key === "f" || e.key === "F") toggleFull();
     else if (cur().id === "names" && /^[1-8]$/.test(e.key)) { e.preventDefault(); editTeam(+e.key - 1); }
+    else if ((e.key === "m" || e.key === "M") && cur().el === "sQ" && cur().ask) {
+      const q = cur().q; st.mcq[q.id] = !st.mcq[q.id]; save(); renderQuestion(false); broadcastStage();
+    }
   });
 
   /* ---------- relay ---------- */
   function connect() {
     if (sub) sub.close();
-    answers = []; devices = new Set();
+    answers = []; devices = new Set(); devTeam = new Map();
     replaying = true; clearTimeout(replayT);
     replayT = setTimeout(() => { replaying = false; }, 2500);
     sub = subscribe(topic, onMsg, setNet);
   }
   function onMsg(p, time) {
     const d = String(p.d || "").slice(0, 24);
-    if (p.t === "hi" && d) { devices.add(d); scheduleRoom(); }
-    else if (p.t === "ans" && d && p.q === "q1") {
-      devices.add(d);
+    if (!d) return;
+    const team = Number.isInteger(p.team) && p.team >= 0 && p.team < 8 ? p.team : null;
+    if (p.t === "hi") { devices.add(d); scheduleRoom(); return; }
+    if (p.t === "team" && team !== null) { devices.add(d); devTeam.set(d, team); scheduleRoom(); if (cur().id === "pick") schedulePick(); return; }
+    if (p.t !== "ans") return;
+    devices.add(d);
+    if (team !== null) devTeam.set(d, team);
+    if (p.q === "q1") {
       const text = cleanAns(p.text);
       if (!text) return;
-      answers.push({ d, text, time });
+      answers.push({ d, q: "q1", text, time });
       scheduleRoom();
       if (cur().el === "sQ1" && cur().id !== "gust") { clearTimeout(cloudT); cloudT = setTimeout(() => drawCloud(!replaying && cur().id === "q1"), 150); }
+      return;
     }
+    if (!QBYID.has(p.q)) return;
+    const opt = Number.isInteger(p.opt) && p.opt >= 0 && p.opt < 4 ? p.opt : null;
+    const text = opt === null ? cleanAns(p.text) : "";
+    if (opt === null && !text) return;
+    answers.push({ d, q: p.q, text, opt, team, time });
+    scheduleRoom(); scheduleScores();
+    const c = cur();
+    if (c.el === "sQ" && c.q.id === p.q) { clearTimeout(cloudT); cloudT = setTimeout(() => renderQuestion(!replaying), 150); }
   }
   function setNet(s) {
     clearTimeout(netT);
@@ -3505,11 +3691,11 @@ function presenter() {
   let roomT = 0;
   function scheduleRoom() { if (roomT) return; roomT = setTimeout(() => { roomT = 0; renderRoom(); }, 200); }
   function renderRoom() {
-    drawDial(devices.size, st.expected);
+    drawDial(devices.size);
     $("#ansCount").textContent = cloudAnswers().length;
   }
-  function drawDial(seated, total) {
-    const pct = total ? Math.min(1, seated / total) : 0, cx = 100, cy = 100;
+  function drawDial(n) {
+    const pct = n ? 1 - Math.exp(-n / 30) : 0, cx = 100, cy = 100;
     const pt = (a, r) => { const t = a * Math.PI / 180; return [(cx + r * Math.cos(t)).toFixed(2), (cy + r * Math.sin(t)).toFixed(2)]; };
     const arc = (a0, a1, r) => { const [x0, y0] = pt(a0, r), [x1, y1] = pt(a1, r); return `M${x0} ${y0} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`; };
     let ticks = "";
@@ -3519,12 +3705,11 @@ function presenter() {
     }
     const val = pct > 0 ? `<path d="${arc(135, 135 + 270 * pct, 76)}" fill="none" stroke="${RED}" stroke-width="12" stroke-linecap="butt"/>` : "";
     $("#dial").innerHTML = `${ticks}<path d="${arc(135, 405, 76)}" fill="none" stroke="#eceff2" stroke-width="12"/>${val}
-      <text x="100" y="108" text-anchor="middle" class="num" font-size="54">${seated}</text>
-      <text x="100" y="134" text-anchor="middle" class="unit" font-size="15">of ${total}</text>`;
-    $("#readout").textContent = seated ? `${plural(seated, "phone", "phones")} connected` : "Nobody yet";
-    $("#mode").textContent = pct >= 1 ? "At setpoint. Everyone's in." : pct >= .75 ? "Almost at setpoint" : pct > 0 ? "Warming up" : "Cold start";
+      <text x="100" y="110" text-anchor="middle" class="num" font-size="56">${n}</text>
+      <text x="100" y="136" text-anchor="middle" class="unit" font-size="15">${n === 1 ? "phone" : "phones"}</text>`;
+    $("#readout").textContent = n ? `${plural(n, "phone", "phones")} connected` : "Nobody yet";
+    $("#mode").textContent = !n ? "Cold start" : n < 10 ? "Warming up" : n < 30 ? "Heating up" : "Running hot";
   }
-
 
   /* ---------- first question: word cloud ---------- */
   function cloudAnswers() {
@@ -3660,6 +3845,199 @@ function presenter() {
     }, keep ? 1700 : 1350);
   }
 
+
+  /* ---------- question pictures (IndexedDB: too big for localStorage) ---------- */
+  const IDB = (() => {
+    let dbp = null;
+    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open("dtc-show", 1); r.onupgradeneeded = () => r.result.createObjectStore("img"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+    const run = (mode, fn) => open().then(db => new Promise((res, rej) => { const t = db.transaction("img", mode), r = fn(t.objectStore("img")); t.oncomplete = () => res(r && r.result); t.onerror = () => rej(t.error); }));
+    return { get: k => run("readonly", s => s.get(k)), set: (k, v) => run("readwrite", s => s.put(v, k)), del: k => run("readwrite", s => s.delete(k)), keys: () => run("readonly", s => s.getAllKeys()) };
+  })();
+  const imgCache = new Map();
+  function loadAllImages() {
+    IDB.keys().then(keys => Promise.all((keys || []).map(k => IDB.get(k).then(v => { if (v) imgCache.set(k, v); })))).then(() => {
+      if (cur().el === "sQ") renderQuestion(false);
+      if (!panel.hidden) renderPics();
+    }).catch(() => {});
+  }
+  function shrink(file, cb) {
+    if (!file || !/^image\//.test(file.type)) return;
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); cb(c.toDataURL("image/jpeg", .85));
+    };
+    img.src = url;
+  }
+  function setQImage(qid, file) {
+    shrink(file, data => {
+      imgCache.set(qid, data); IDB.set(qid, data).catch(() => {});
+      if (cur().el === "sQ" && cur().q.id === qid) renderQuestion(false);
+      renderPics();
+    });
+  }
+  let picTarget = null;
+  $("#qFile").addEventListener("change", e => { if (picTarget) setQImage(picTarget, e.target.files[0]); e.target.value = ""; });
+  const qVis = $("#qVis");
+  ["dragenter", "dragover"].forEach(t => qVis.addEventListener(t, e => { e.preventDefault(); qVis.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => qVis.addEventListener(t, () => qVis.classList.remove("over")));
+  qVis.addEventListener("drop", e => { e.preventDefault(); const q = cur().q; if (q && q.kind === "pic") setQImage(q.id, e.dataTransfer.files[0]); });
+  qVis.addEventListener("click", () => { const q = cur().q; if (q && q.kind === "pic" && !imgCache.has(q.id)) { picTarget = q.id; $("#qFile").click(); } });
+  function renderPics() {
+    const ol = $("#pics");
+    ol.innerHTML = QUESTIONS.filter(q => q.kind === "pic").map(q => {
+      const src = imgCache.get(q.id);
+      return `<li><span class="th" style="${src ? `background-image:url('${src}')` : ""}"></span><span>Q${q.n}: ${esc(q.label)}</span><span><button type="button" class="btn" data-pick="${q.id}">${src ? "Change" : "Choose"}</button>${src ? ` <button type="button" class="btn" data-del="${q.id}">Remove</button>` : ""}</span></li>`;
+    }).join("");
+    $$("[data-pick]", ol).forEach(b => b.addEventListener("click", () => { picTarget = b.dataset.pick; $("#qFile").click(); }));
+    $$("[data-del]", ol).forEach(b => b.addEventListener("click", () => { imgCache.delete(b.dataset.del); IDB.del(b.dataset.del).catch(() => {}); renderPics(); if (cur().el === "sQ") renderQuestion(false); }));
+  }
+
+  /* ---------- scores: 1 point per answer, at most 3 per phone per question; a multiple-choice vote counts once ---------- */
+  const teamName = i => st.teams[i] || `Team ${i + 1}`;
+  function scoreState() {
+    const pts = Array(8).fill(0), per = new Map(), voted = new Set();
+    for (const a of answers) {
+      if (a.q === "q1" || a.time < st.cut) continue;
+      const team = a.team !== null && a.team !== undefined ? a.team : devTeam.get(a.d);
+      if (team === undefined || team === null) continue;
+      const k = a.d + "|" + a.q;
+      if (a.opt !== null && a.opt !== undefined) { if (voted.has(k)) continue; voted.add(k); }
+      const n = per.get(k) || 0; if (n >= 3) continue;
+      per.set(k, n + 1); pts[team]++;
+    }
+    return pts;
+  }
+  let prevPts = null, scoresT = 0, lastScoresSent = "";
+  function scheduleScores() {
+    clearTimeout(scoresT);
+    scoresT = setTimeout(() => {
+      if (cur().el === "sQ") renderBoard();
+      const pts = scoreState(), key = pts.join(",");
+      if (key !== lastScoresSent && !replaying) { lastScoresSent = key; post(topic, { v: 1, t: "scores", pts }, 3); }
+    }, 900);
+  }
+  function renderBoard() {
+    const pts = scoreState(), max = Math.max(1, ...pts), top = Math.max(...pts);
+    $("#board").innerHTML = pts.map((p, i) => `<li class="${p === top && p > 0 ? "lead" : ""}${prevPts && p > prevPts[i] ? " up" : ""}"><span class="bn">${esc(teamName(i))}</span><span class="bb"><i style="width:${(p / max * 100).toFixed(1)}%"></i></span><span class="bp">${p}</span></li>`).join("");
+    prevPts = pts;
+  }
+
+  /* ---------- question screen ---------- */
+  function hits(q, key) {
+    const parts = key.split(/[\s/-]+/);
+    return q.accept.some(a => key === a || parts.includes(a) || (a.length >= 4 && key.includes(a)));
+  }
+  function aggregateQ(list) {
+    const m = new Map(), per = new Map();
+    for (const a of list) {
+      if (!a.text) continue;
+      const n = per.get(a.d) || 0; if (n >= 3) continue; per.set(a.d, n + 1);
+      const k = keyOf(a.text); if (!k) continue;
+      let e = m.get(k); if (!e) { e = { key: k, count: 0, forms: new Map(), first: a.time }; m.set(k, e); }
+      e.count++; e.forms.set(a.text, (e.forms.get(a.text) || 0) + 1);
+    }
+    return [...m.values()].map(e => ({ key: e.key, count: e.count, first: e.first, display: [...e.forms.entries()].sort((a, b) => b[1] - a[1])[0][0] }))
+      .sort((a, b) => b.count - a.count || a.first - b.first).slice(0, 60);
+  }
+  function drawCloudIn(el, items, fx, isHit) {
+    const W = el.clientWidth, H = el.clientHeight; if (!W || !H) return;
+    const maxF = Math.max(28, Math.min(H * .22, W * .16, 120)), minF = Math.max(14, Math.min(26, H * .06));
+    let sc = 1, placed = null;
+    for (let i = 0; i < 9 && !placed; i++) { placed = place(items, W, H, Math.max(12, minF * Math.max(.6, sc)), maxF * sc, false); sc *= .86; }
+    if (!placed) placed = place(items, W, H, 12, maxF * sc, true);
+    const existing = new Map($$(".w", el).map(n => [n.dataset.k, n])), keep = new Set(), box = el.getBoundingClientRect();
+    placed.forEach((p, i) => {
+      let n = existing.get(p.key); const isNew = !n;
+      if (!n) { n = document.createElement("span"); n.className = "w"; n.dataset.k = p.key; el.appendChild(n); }
+      const prevC = +n.dataset.c || 0;
+      n.textContent = p.display; n.style.fontSize = p.f + "px";
+      n.style.transform = `translate(-50%,-50%) translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`;
+      n.dataset.c = p.count; n.classList.toggle("top", i === 0 && p.count > 1); n.classList.toggle("hit", !!isHit(p.key));
+      keep.add(p.key);
+      if (fx && (isNew || p.count > prevC)) {
+        if (isNew) { n.classList.remove("new"); void n.offsetWidth; n.classList.add("new"); }
+        FX.burst(box.left + W / 2 + p.x, box.top + H / 2 + p.y, isNew ? 22 : 10, isNew ? 280 : 180);
+      }
+    });
+    existing.forEach((n, k) => { if (!keep.has(k)) n.remove(); });
+  }
+  function renderQuestion(fx) {
+    const s = cur(), q = s.q; if (!q) return;
+    $("#qNo").textContent = `Q${q.n}`;
+    $("#qPrompt").textContent = q.kind === "riddle" ? "What am I?" : "Which IT term is this?";
+    const vis = $("#qVis");
+    if (q.kind === "riddle") { vis.classList.remove("empty"); vis.style.backgroundImage = "none"; vis.innerHTML = `<p class="riddle">${esc(q.text)}</p>`; }
+    else {
+      const src = imgCache.get(q.id);
+      vis.innerHTML = src ? "" : "Drop the picture for this question here";
+      vis.classList.toggle("empty", !src);
+      vis.style.backgroundImage = src ? `url("${src}")` : "none";
+    }
+    const mine = answers.filter(a => a.q === q.id && a.time >= st.cut);
+    $("#qCount").textContent = mine.length;
+    const rv = $("#qReveal");
+    if (s.reveal) { $("#rvA").textContent = q.answer; $("#rvB").textContent = q.also ? `Also right: ${q.also}` : ""; rv.hidden = false; }
+    else rv.hidden = true;
+    const cloud = $("#gcloud"), mcq = $("#qMcq"), opts = shuffled(q.mcq, q.id);
+    if (st.mcq[q.id]) {
+      cloud.hidden = true; mcq.hidden = false;
+      const last = new Map(); mine.forEach(a => { if (a.opt !== null && a.opt !== undefined) last.set(a.d, a.opt); });
+      const counts = [0, 0, 0, 0]; last.forEach(o => counts[o]++);
+      const tot = Math.max(1, last.size);
+      mcq.innerHTML = opts.map((o, i) => `<li class="${s.reveal && o === q.mcq[0] ? "right" : ""}"><i style="width:${(counts[i] / tot * 100).toFixed(0)}%"></i><span><span class="k">${"ABCD"[i]}</span>${esc(o)}</span><span class="v">${counts[i]}</span></li>`).join("");
+    } else {
+      cloud.hidden = false; mcq.hidden = true;
+      cloud.classList.toggle("revealed", !!s.reveal);
+      drawCloudIn(cloud, aggregateQ(mine), fx && !s.reveal, k => s.reveal && hits(q, k));
+    }
+    renderBoard();
+  }
+  function revealFx() {
+    const a = $("#rvA");
+    if (reduceMotion) return;
+    a.animate([{ opacity: 0, transform: "translateX(18vw) skewX(-10deg)", filter: "blur(10px)" }, { opacity: 1, transform: "none", filter: "blur(0)" }], { duration: 750, easing: "cubic-bezier(.2,1.25,.4,1)", fill: "both" });
+    $("#rvB").animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 500, fill: "both" });
+    setTimeout(() => { const r = a.getBoundingClientRect(); FX.burst(r.left + Math.min(r.width, 300) / 2, r.top + r.height / 2, 55, 380); }, 450);
+  }
+
+  /* ---------- team pick screen ---------- */
+  let pickT = 0, prevPick = null;
+  function schedulePick() { clearTimeout(pickT); pickT = setTimeout(renderPick, 150); }
+  function renderPick() {
+    const counts = Array(8).fill(0); devTeam.forEach(t => counts[t]++);
+    $("#pickgrid").innerHTML = counts.map((n, i) => `<li class="${prevPick && n > prevPick[i] ? "bump" : ""}"><span class="pn">Team ${i + 1}</span><span class="pt">${esc(st.teams[i] || `Team ${i + 1}`)}</span><span class="pc">${plural(n, "phone", "phones")}</span></li>`).join("");
+    prevPick = counts;
+  }
+
+  /* ---------- finale ---------- */
+  function renderOrder(animate, revealed) {
+    const ol = $("#otiles"), mix = shuffled(ORDER_ITEMS, "order-round");
+    $("#orderTitle").textContent = revealed ? "The order they happen in" : "Put these in the order they happen";
+    const tile = t => `<li data-t="${esc(t)}"><span class="on">${ORDER_ITEMS.indexOf(t) + 1}</span><span>${esc(t)}</span></li>`;
+    if (!revealed || !animate || reduceMotion) { ol.classList.toggle("revealed", !!revealed); ol.innerHTML = (revealed ? ORDER_ITEMS : mix).map(tile).join(""); return; }
+    ol.classList.remove("revealed"); ol.innerHTML = mix.map(tile).join("");
+    const first = new Map($$("li", ol).map(li => [li.dataset.t, li.getBoundingClientRect()]));
+    ORDER_ITEMS.forEach(t => ol.appendChild(ol.querySelector(`li[data-t="${CSS.escape(t)}"]`)));
+    ol.classList.add("revealed");
+    $$("li", ol).forEach((li, i) => {
+      const a = first.get(li.dataset.t), b = li.getBoundingClientRect();
+      li.animate([{ transform: `translate(${a.left - b.left}px,${a.top - b.top}px)`, background: "#ffffff", color: INK }, { transform: "none" }], { duration: 1200, delay: i * 140, easing: "cubic-bezier(.65,0,.25,1)", fill: "backwards" });
+    });
+  }
+  function renderFinals() {
+    const pts = scoreState(), max = Math.max(1, ...pts);
+    const order = pts.map((p, i) => ({ p, i })).sort((a, b) => b.p - a.p || a.i - b.i);
+    const ol = $("#finals");
+    ol.innerHTML = order.map((o, r) => `<li class="${r === 0 && o.p > 0 ? "first" : ""}"><span class="fr">${r + 1}</span><span class="fn">${esc(teamName(o.i))}</span><span class="fb"><i data-w="${(o.p / max * 100).toFixed(1)}"></i></span><span class="fp">${o.p}</span></li>`).join("");
+    requestAnimationFrame(() => setTimeout(() => {
+      $$(".fb i", ol).forEach((b, k) => { b.style.transitionDelay = `${(order.length - 1 - k) * 180}ms`; b.style.width = b.dataset.w + "%"; });
+      setTimeout(() => { const f = ol.querySelector("li.first .fn"); if (f) { const r = f.getBoundingClientRect(); FX.burst(r.left + 40, r.top + r.height / 2, 80, 460); } }, 1900);
+    }, 120));
+  }
+
   /* ---------- meme screens ---------- */
   function renderMeme(s) {
     $("#memeLine").textContent = s.line;
@@ -3753,20 +4131,21 @@ function presenter() {
     if (b) { b.hidden = n === 0; b.textContent = `Show ${n} hidden ${n === 1 ? "word" : "words"}`; }
   }
   function renderPanel() {
-    renderSteps(); renderTeamList(); renderPanelHidden();
-    $("#expected").value = st.expected;
+    renderSteps(); renderTeamList(); renderPanelHidden(); renderPics();
     $("#bSampleAns").textContent = st.sample ? "Remove sample answers" : "Add 20 sample answers";
   }
-  $("#expected").addEventListener("change", e => { const v = Math.max(1, Math.min(500, parseInt(e.target.value, 10) || 50)); st.expected = v; e.target.value = v; save(); renderRoom(); });
   $("#bSampleAns").addEventListener("click", () => { st.sample = !st.sample; save(); renderPanel(); drawCloud(false); renderRoom(); });
-  twoStep($("#bClearAns"), "Click again to clear", () => { st.cut = Math.floor(Date.now() / 1000) + 1; st.sample = false; st.lit = {}; st.hidden = {}; save(); drawCloud(false); renderRoom(); renderPanel(); });
+  twoStep($("#bClearAns"), "Click again to clear", () => { st.cut = Math.floor(Date.now() / 1000) + 1; st.sample = false; st.lit = {}; st.hidden = {}; st.mcq = {}; save(); drawCloud(false); renderRoom(); renderPanel(); if (cur().el === "sQ") renderQuestion(false); scheduleScores(); });
   const unhide = document.createElement("button");
   unhide.type = "button"; unhide.className = "btn quiet"; unhide.id = "bUnhide"; unhide.hidden = true;
   $("#bClearAns").after(unhide);
   unhide.addEventListener("click", () => { st.hidden = {}; save(); drawCloud(false); renderPanelHidden(); });
 
+  window.addEventListener("resize", () => { clearTimeout(cloudT); cloudT = setTimeout(() => { if (cur().el === "sQ") renderQuestion(false); }, 200); });
+
   /* ---------- start ---------- */
   renderQR(false);
+  loadAllImages();
   connect();
   goStage(st.stage, { load: true, instant: true });
   renderRoom();
@@ -3779,22 +4158,40 @@ function phone(topic) {
   $$("[data-fan]").forEach(el => { el.innerHTML = fanSvg(RED, INK); });
   let dev = store.get("dtc-dev", null);
   if (!/^[a-z0-9]{6,24}$/.test(dev || "")) { dev = rand(10); store.set("dtc-dev", dev); }
-  const MINE = "dtc-ans-" + topic;
-  const mine = store.get(MINE, {});
-  let stage = null, stageTime = 0, sending = false;
+  const MINE = "dtc-ans-" + topic, VOTES = "dtc-vote-" + topic, TEAM = "dtc-team-" + topic;
+  const mine = store.get(MINE, {}), votes = store.get(VOTES, {});
+  let myTeam = store.get(TEAM, null);
+  if (!(Number.isInteger(myTeam) && myTeam >= 0 && myTeam < 8)) myTeam = null;
+  let stage = null, stageTime = 0, sending = false, teams = Array(8).fill(""), pts = null, choosing = false;
   const MAX = 3;
+  const tName = i => teams[i] || `Team ${i + 1}`;
 
-  function show(id) { ["sWait", "sAsk"].forEach(s => { $("#" + s).hidden = s !== id; }); }
+  function show(id) { ["sWait", "sTeam", "sAsk"].forEach(s => { $("#" + s).hidden = s !== id; }); }
   function render() {
+    const needTeam = stage && (stage.pick || (stage.ask && stage.ask !== "q1"));
+    if (choosing || (needTeam && myTeam === null) || (stage && stage.pick)) { renderTeams(); return; }
     if (!stage || !stage.ask) {
       show("sWait");
-      $("#waitTitle").textContent = "You're in";
-      $("#waitSub").textContent = stage ? "Eyes on the big screen. Questions appear here when it's time to answer." : "The first question appears here in a moment.";
+      $("#waitTitle").textContent = myTeam !== null ? tName(myTeam) : "You're in";
+      $("#waitSub").textContent = !stage ? "The first question appears here in a moment."
+        : (myTeam !== null && pts ? `Your team has ${plural(pts[myTeam], "point", "points")}. Eyes on the big screen.` : "Eyes on the big screen. Questions appear here when it's time to answer.");
       return;
     }
-    const q = stage.ask, list = mine[q] || [];
     show("sAsk");
+    const q = stage.ask, scored = q !== "q1";
+    $("#myTeam").hidden = !scored || myTeam === null;
+    if (scored && myTeam !== null) $("#myTeamName").textContent = tName(myTeam) + (pts ? `, ${plural(pts[myTeam], "point", "points")}` : "");
     $("#askPrompt").textContent = stage.prompt || "Your answer";
+    if (Array.isArray(stage.mcq)) {
+      $("#askForm").hidden = true; $("#sent").innerHTML = ""; $("#opts").hidden = false;
+      const v = votes[q];
+      $("#opts").innerHTML = stage.mcq.map((o, i) => `<li><button type="button" data-o="${i}" aria-pressed="${v === i}"><span class="k">${"ABCD"[i]}</span>${esc(o)}</button></li>`).join("");
+      $$("[data-o]", $("#opts")).forEach(b => b.addEventListener("click", () => vote(q, +b.dataset.o)));
+      if (!sending) $("#askLine").textContent = v === undefined ? "Tap one." : "Locked in. You can still change it.";
+      return;
+    }
+    $("#opts").hidden = true;
+    const list = mine[q] || [];
     $("#sent").innerHTML = list.map(t => `<li>${esc(t)}</li>`).join("");
     const full = list.length >= MAX;
     $("#askForm").hidden = full;
@@ -3802,11 +4199,40 @@ function phone(topic) {
     else if (!sending) $("#askLine").textContent = list.length ? `Sent. You can add ${MAX - list.length} more.` : "";
     $("#bSend").textContent = list.length ? "Send another" : "Send";
   }
+  function renderTeams() {
+    show("sTeam");
+    $("#pteams").innerHTML = teams.map((_, i) => `<li><button type="button" data-t="${i}" aria-pressed="${myTeam === i}"><small>Team ${i + 1}</small>${esc(tName(i))}</button></li>`).join("");
+    $$("[data-t]", $("#pteams")).forEach(b => b.addEventListener("click", () => pickTeam(+b.dataset.t)));
+    $("#teamBack").hidden = !(choosing && myTeam !== null);
+  }
+  function pickTeam(i) {
+    myTeam = i; store.set(TEAM, i); choosing = false;
+    post(topic, { v: 1, t: "team", d: dev, team: i }, 5);
+    render();
+  }
+  $("#bChangeTeam").addEventListener("click", () => { choosing = true; render(); });
+  $("#bTeamBack").addEventListener("click", () => { choosing = false; render(); });
 
   subscribe(topic, (p, time) => {
-    if (p.t === "stage" && time >= stageTime) { stageTime = time; stage = p; render(); }
+    if (p.t === "stage" && time >= stageTime) {
+      stageTime = time; stage = p;
+      if (Array.isArray(p.teams) && p.teams.length === 8) teams = p.teams.map(t => cleanAns(t).slice(0, 32) || "");
+      render();
+    } else if (p.t === "teams" && Array.isArray(p.names) && p.names.length === 8) {
+      teams = p.names.map(t => cleanAns(t).slice(0, 32) || ""); render();
+    } else if (p.t === "scores" && Array.isArray(p.pts) && p.pts.length === 8) {
+      pts = p.pts.map(n => Math.max(0, n | 0)); render();
+    }
   }, () => {});
 
+  async function vote(q, o) {
+    if (sending) return;
+    sending = true; $("#askLine").textContent = "Sending";
+    const ok = await post(topic, { v: 1, t: "ans", q, d: dev, team: myTeam, opt: o }, 5);
+    sending = false;
+    if (ok) { votes[q] = o; store.set(VOTES, votes); render(); }
+    else $("#askLine").textContent = "Couldn't send. Check your mobile data and try again.";
+  }
   $("#askForm").addEventListener("submit", async e => {
     e.preventDefault();
     if (!stage || !stage.ask || sending) return;
@@ -3814,7 +4240,9 @@ function phone(topic) {
     if (!text) { inp.focus(); return; }
     if ((mine[q] || []).length >= MAX) return;
     sending = true; $("#bSend").disabled = true; $("#askLine").textContent = "Sending";
-    const ok = await post(topic, { v: 1, t: "ans", q, d: dev, text }, 5);
+    const msg = { v: 1, t: "ans", q, d: dev, text };
+    if (q !== "q1" && myTeam !== null) msg.team = myTeam;
+    const ok = await post(topic, msg, 5);
     sending = false; $("#bSend").disabled = false;
     if (ok) {
       mine[q] = (mine[q] || []).concat(text); store.set(MINE, mine);
