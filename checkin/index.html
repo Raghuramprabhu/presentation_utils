@@ -3276,14 +3276,14 @@ const QUESTIONS = [
   { id: "q9", kind: "pic", label: "The single that brings up the century (video)", answer: "Milestone", also: "Singleton, for the developers. Incremental delivery.", accept: ["milestone", "singleton", "increment"], mcq: ["Milestone", "Deployment", "Target achieved", "Sprint review"] },
   { id: "q10", kind: "riddle", label: "Riddle: regression", text: "You fixed one thing and I woke up somewhere else. I'm the ghost of a bug you already killed.", answer: "Regression", also: "", accept: ["regress"], mcq: ["Regression", "Recursion", "Rollback", "Memory leak"] },
   { id: "q11", kind: "riddle", label: "Riddle: deadline", text: "Everyone agrees on me at the start and fears me at the end. You see me coming for weeks, yet I always arrive early. Move me once, and everyone wants me moved again.", answer: "Deadline", also: "Release date, go-live, due date, sprint end, even exam day", accept: ["deadline", "dead line", "due", "release date", "release", "go live", "golive", "go-live", "sprint end", "timeline", "crunch", "eta", "cutoff", "cut off", "exam", "target date", "launch"], mcq: ["Deadline", "Timesheet", "Stand-up", "Appraisal"] },
-  { id: "q12", kind: "pic", label: "DRS: third umpire review (video)", answer: "Code review", also: "", accept: ["review"], mcq: ["Code review", "Compliance check", "Release notes", "Access control"] },
+  { id: "q12", kind: "pic", label: "DRS: third umpire review (video)", answer: "Review", also: "Code review, peer review", accept: ["review"], mcq: ["Review", "Compliance check", "Release notes", "Access control"] },
   { id: "q13", kind: "pic", label: "Relay baton pass", answer: "Handover", also: "", accept: ["handover", "hand over", "handoff", "hand off"], mcq: ["Handover", "API call", "Load balancing", "Relay server"] },
   { id: "q14", kind: "pic", label: "Traffic signal", answer: "Go/no-go decision", also: "Conditional go, for the yellow", accept: ["go", "no go", "nogo", "go/no", "conditional"], mcq: ["Go/no-go decision", "Traffic routing", "Feature flag", "Circuit breaker"] },
   { id: "q15", kind: "pic", label: "Keeper signals for a review", answer: "Escalation", also: "Rollback, if it's overturned", accept: ["escalat", "rollback", "roll back"], mcq: ["Escalation", "Code review", "Audit", "Approval"] },
   { id: "q16", kind: "pic", label: "Tiger Muthuvel Pandian", answer: "MVP: minimum viable product", also: "Most valuable player, if you're a cricket fan", accept: ["mvp", "minimum viable", "viable"], mcq: ["Minimum viable product", "Most valuable player", "Model view presenter", "Master volume plan"] },
   { id: "q17", kind: "pic", label: "Kabali walks out", answer: "Release", also: "Going live", accept: ["release", "live", "launch", "deploy", "production"], mcq: ["Release", "Restart", "Reboot", "Recovery"] }
 ];
-const ORDER_ITEMS = ["Proof of concept", "Grooming", "Code review", "Merge", "Test coverage", "Go/no-go", "Release", "Hotfix", "Handover"];
+const ORDER_ITEMS = ["Proof of concept", "Grooming", "Review", "Merge", "Test coverage", "Go/no-go", "Release", "Hotfix", "Handover"];
 QUESTIONS.forEach((q, i) => {
   q.n = i + 2;
   q.prompt = q.kind === "riddle" ? `Question ${q.n}: what am I?` : `Question ${q.n}: which IT term is this?`;
@@ -3516,7 +3516,7 @@ function presenter() {
       const dpr = window.devicePixelRatio || 1, Wd = innerWidth, Hd = innerHeight;
       dust.width = Wd * dpr; dust.height = Hd * dpr;
       const c = dust.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const motes = Array.from({ length: 120 }, () => ({ x: Math.random() * Wd, y: Math.random() * Hd, r: .6 + Math.random() * 2.2, vy: -(5 + Math.random() * 18), vx: (Math.random() - .5) * 8, ph: Math.random() * 6.28 }));
+      const motes = Array.from({ length: 160 }, () => ({ x: Math.random() * Wd, y: Math.random() * Hd, r: .8 + Math.random() * 2.6, vy: -(5 + Math.random() * 18), vx: (Math.random() - .5) * 8, ph: Math.random() * 6.28 }));
       let last = performance.now();
       (function loop(now) {
         const dt = Math.min(.05, (now - last) / 1000); last = now;
@@ -3524,7 +3524,7 @@ function presenter() {
         for (const m of motes) {
           m.x += m.vx * dt; m.y += m.vy * dt; m.ph += dt * 1.6;
           if (m.y < -10) { m.y = Hd + 10; m.x = Math.random() * Wd; }
-          c.globalAlpha = .22 + .33 * (.5 + .5 * Math.sin(m.ph));
+          c.globalAlpha = .32 + .45 * (.5 + .5 * Math.sin(m.ph));
           c.fillStyle = "#ffcc66"; c.beginPath(); c.arc(m.x, m.y, m.r, 0, 6.283); c.fill();
         }
         dustRaf = requestAnimationFrame(loop);
@@ -3532,7 +3532,7 @@ function presenter() {
     }
     function arm() {
       if (reduceMotion) { el.hidden = true; state = "idle"; finishQR(++animToken); return; }
-      reset(); el.hidden = false; $("#ihint").hidden = false; state = "armed"; hideQR();
+      reset(); el.hidden = false; $("#ihint").hidden = false; state = "armed"; hideQR(); startDust();
     }
     function advance() {
       if (state === "busy") { pending = true; return; }
@@ -3755,7 +3755,7 @@ function presenter() {
     if (intro.state !== "idle" && panel.hidden) {
       if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); intro.advance(); return; }
       if (e.key === "Escape") { e.preventDefault(); intro.skip(); return; }
-      return;
+      if (e.key === "ArrowLeft" || e.key === "PageUp") return;
     }
     if (e.key === "Escape" && !panel.hidden) { setPanel(false); return; }
     if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest("input,textarea,select")) return;
