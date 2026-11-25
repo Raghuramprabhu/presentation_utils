@@ -257,6 +257,20 @@ h1,h2,h3,p{margin:0}
 .ordpicked li.slot{border:2px dashed var(--steel);border-radius:6px;padding:10px 12px;color:var(--duct);font-size:.9rem}
 .ordpool{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .ordpool button{padding:10px 12px;border:2px solid var(--graphite);border-radius:6px;background:var(--white);font-weight:800;font-size:1rem}
+
+/* closing */
+.nextstage{display:grid;place-items:center}
+.nx{text-align:center;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.4vh,16px)}
+.nx-a{font-weight:800;color:var(--duct);font-size:clamp(1.3rem,2.6vw,2.6rem);margin:0}
+.nx-b{font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;color:var(--red);font-size:clamp(3rem,9vw,9.5rem);line-height:.92;margin:0;white-space:nowrap}
+.nx-c{font-weight:900;font-size:clamp(1.6rem,3.6vw,3.8rem);margin:0;color:var(--graphite)}
+.nx-ps{display:flex;align-items:center;gap:clamp(10px,1.4vw,22px);margin-top:clamp(18px,4vh,48px);padding-top:clamp(14px,2.6vh,28px);border-top:3px solid var(--graphite)}
+.nx-ps p{margin:0;font-weight:800;font-size:clamp(1.4rem,2.8vw,3rem)}
+.nx-ps p span{color:var(--red)}
+.cup{width:clamp(56px,6vw,96px);height:auto}
+.cup .steam{fill:none;stroke:#68707b;stroke-width:4;stroke-linecap:round;animation:steam 2.4s ease-in-out infinite;opacity:.0}
+.cup .s2{animation-delay:.6s}.cup .s3{animation-delay:1.2s}
+@keyframes steam{0%{transform:translateY(8px);opacity:0}40%{opacity:.8}100%{transform:translateY(-10px);opacity:0}}
 .fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40}
 .steps{margin:6px 0 0;padding-left:22px}
 .steps li{margin:2px 0}
@@ -388,7 +402,7 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
   .zone .crew{grid-column:1/-1}
 }
 @media (prefers-reduced-motion:reduce){
-  .blower .rotor,.mast .net::before,.crew li.fresh,.panel{animation:none}
+  .blower .rotor,.cup .steam,.mast .net::before,.crew li.fresh,.panel{animation:none}
 }
 </style>
 </head>
@@ -492,6 +506,24 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
   <main class="stage scorestage" id="sScores" hidden>
     <h2 class="qtext">Final scores</h2>
     <ol class="finals" id="finals"></ol>
+  </main>
+
+  <!-- Closing: next stop -->
+  <main class="stage nextstage" id="sNext" hidden>
+    <div class="nx">
+      <p class="nx-a" id="nxA">Next stop</p>
+      <p class="nx-b" id="nxB">DTC Hackathon</p>
+      <p class="nx-c" id="nxC">Tomorrow morning</p>
+      <div class="nx-ps" id="nxPS">
+        <svg class="cup" viewBox="0 0 120 120" aria-hidden="true">
+          <path class="steam" d="M42 40 C34 30 50 24 42 12"/><path class="steam s2" d="M60 40 C52 30 68 24 60 12"/><path class="steam s3" d="M78 40 C70 30 86 24 78 12"/>
+          <path d="M24 50 H96 V78 C96 94 84 104 68 104 H52 C36 104 24 94 24 78 Z" fill="#d6001c"/>
+          <path d="M96 58 H104 C112 58 112 80 104 80 H96" fill="none" stroke="#d6001c" stroke-width="7"/>
+          <rect x="16" y="106" width="88" height="6" rx="3" fill="#20242a"/>
+        </svg>
+        <p><span>P.S.</span> Breakfast is on us.</p>
+      </div>
+    </div>
   </main>
 
   <canvas class="fx" id="fx" aria-hidden="true"></canvas>
@@ -3294,6 +3326,7 @@ STAGES.splice(STAGES.findIndex(s => s.id === "names") + 1, 0, { id: "pick", name
 STAGES.push({ id: "order", name: "Finale: put it in order", el: "sOrder", ask: "order" });
 STAGES.push({ id: "orderr", name: "Finale: the right order", el: "sOrder", reveal: true });
 STAGES.push({ id: "scores", name: "Final scoreboard", el: "sScores" });
+STAGES.push({ id: "next", name: "Next stop: tomorrow morning", el: "sNext" });
 const QBYID = new Map(QUESTIONS.map(q => [q.id, q]));
 function shuffled(arr, seed) { const a = arr.slice(); let h = F.hash(seed); for (let i = a.length - 1; i > 0; i--) { h = Math.imul(h ^ (h >>> 15), 2246822519) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 /* ================= PRESENTER ================= */
@@ -3725,6 +3758,7 @@ function presenter() {
     if (s.el === "sPick") { prevPick = null; renderPick(); }
     if (s.el === "sOrder") renderOrder(!(opts && opts.load), !!s.reveal);
     if (s.el === "sScores") renderFinals();
+    if (s.el === "sNext") playNext(!(opts && opts.load));
     if (s.el === "sJoin" && prev && prev.id !== "join" && !(opts && opts.load)) renderQR(false);
     renderTimers(false); ensureTick();
     renderSteps();
@@ -4292,6 +4326,18 @@ function presenter() {
     if (flipNew) { const svgs = box.querySelectorAll("svg"); const last = svgs[svgs.length - 1]; if (last && !reduceMotion) last.classList.add("flip"); }
   }
 
+  /* ---------- closing: next stop, then the breakfast P.S. ---------- */
+  function playNext(animate) {
+    const parts = [$("#nxA"), $("#nxB"), $("#nxC"), $("#nxPS")];
+    parts.forEach(p => p.getAnimations().forEach(a => a.cancel()));
+    if (!animate || reduceMotion) return;
+    $("#nxA").animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 900, easing: "ease-out", fill: "both" });
+    $("#nxB").animate([{ opacity: 0, transform: "translateX(30vw) skewX(-12deg)", filter: "blur(12px)" }, { opacity: 1, transform: "none", filter: "blur(0)" }], { duration: 1100, delay: 900, easing: "cubic-bezier(.2,1.2,.4,1)", fill: "both" });
+    $("#nxC").animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 900, delay: 2200, easing: "ease-out", fill: "both" });
+    $("#nxPS").animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "none" }], { duration: 1000, delay: 4400, easing: "ease-out", fill: "both" });
+    setTimeout(() => { if (cur().id !== "next") return; const r = $("#nxB").getBoundingClientRect(); FX.burst(r.left + r.width * .2, r.top + r.height / 2, 50, 420); FX.burst(r.right - r.width * .2, r.top + r.height / 2, 50, 420); }, 1700);
+  }
+
   /* ---------- meme screens ---------- */
   /* Meme screens play slowly: the picture fades up, the Tamil line arrives word by word, then the English, then who said it. */
   function renderMeme(s, animate) {
@@ -4444,6 +4490,7 @@ function phone(topic) {
     if (choosing || (needTeam && myTeam === null) || (stage && stage.pick)) { renderTeams(); return; }
     if (!stage || !stage.ask) {
       show("sWait");
+      if (stage && stage.id === "next") { $("#waitTitle").textContent = "See you tomorrow"; $("#waitSub").textContent = "Next stop: DTC Hackathon, tomorrow morning. P.S. Breakfast is on us."; return; }
       $("#waitTitle").textContent = myTeam !== null ? tName(myTeam) : "You're in";
       $("#waitSub").textContent = !stage ? "The first question appears here in a moment."
         : (myTeam !== null && pts ? `Your team has ${plural(pts[myTeam], "point", "points")}. Eyes on the big screen.` : "Eyes on the big screen. Questions appear here when it's time to answer.");
