@@ -580,6 +580,19 @@ textarea{width:100%;border:2px solid var(--steel);border-radius:4px;padding:10px
         <div class="acts"><button type="button" class="btn quiet" id="bClearImgs">Remove meme pictures</button></div>
       </section>
       <section class="psec">
+        <h3>Relay server</h3>
+        <p class="help">Phones and this screen talk through a free relay. If the top shows "Offline, reconnecting", switch to another one. This makes a new QR code that carries the relay, so everyone scans again.</p>
+        <p class="help">Now using: <b id="relayNow"></b></p>
+        <div class="acts">
+          <button type="button" class="btn quiet" data-relay="https://ntfy.sh">ntfy.sh</button>
+          <button type="button" class="btn quiet" data-relay="https://ntfy.envs.net">ntfy.envs.net</button>
+          <button type="button" class="btn quiet" data-relay="https://ntfy.adminforge.de">ntfy.adminforge.de</button>
+        </div>
+        <label class="field" style="margin-top:10px">Or type any ntfy server address<input id="relayInput" spellcheck="false" placeholder="https://ntfy.example.org"></label>
+        <div class="acts" style="margin-top:8px"><button type="button" class="btn red" id="bRelay">Use this relay</button></div>
+        <p class="help" id="relayMsg" role="status"></p>
+      </section>
+      <section class="psec">
         <h3>Fresh start</h3>
         <p class="help">For each new test run: new QR code, every answer, vote, timer and sample cleared, back to the first screen. Team names and pictures stay.</p>
         <div class="acts"><button type="button" class="btn red" id="bFresh">Start a fresh session</button></div>
@@ -3178,7 +3191,13 @@ if (typeof module === "object" && module.exports) module.exports = FDFS;
 (() => {
 "use strict";
 const F = FDFS;
-const RELAY = (() => { try { return (localStorage.getItem("dtc-relay") || "https://ntfy.sh").replace(/\/+$/, ""); } catch (e) { return "https://ntfy.sh"; } })();
+const DEFAULT_RELAY = "https://ntfy.sh";
+/* The relay can be switched: phones get it from the QR link (&r=...), the presenter from the control panel. */
+const RELAY = (() => {
+  const m = location.hash.match(/[#&]r=([^&]+)/);
+  if (m) { try { const r = decodeURIComponent(m[1]).replace(/\/+$/, ""); if (/^https?:\/\/[A-Za-z0-9.:-]+$/.test(r)) return r; } catch (e) { /* ignore */ } }
+  try { return (localStorage.getItem("dtc-relay") || DEFAULT_RELAY).replace(/\/+$/, ""); } catch (e) { return DEFAULT_RELAY; }
+})();
 const PUBLIC_BASE_GUESS = "";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -3230,7 +3249,7 @@ async function post(topic, obj, tries) {
   return false;
 }
 function subscribe(topic, onMsg, onStatus) {
-  let es = null, retryT = 0, errT = 0, pollT = 0, since = "all", closed = false;
+  let es = null, retryT = 0, errT = 0, pollT = 0, since = "all", closed = false, fails = 0;
   const seen = new Set();
   function handle(d) {
     if (!d || d.event !== "message" || seen.has(d.id)) return;
@@ -3257,13 +3276,13 @@ function subscribe(topic, onMsg, onStatus) {
     onStatus("wait");
     const src = new EventSource(`${RELAY}/${encodeURIComponent(topic)}/sse?since=${encodeURIComponent(since)}`);
     es = src;
-    const opened = () => { clearTimeout(errT); onStatus("live"); };
+    const opened = () => { clearTimeout(errT); fails = 0; onStatus("live"); };
     src.onopen = opened;
     src.addEventListener("open", opened);
     src.onerror = () => {
       if (src !== es) return;
       clearTimeout(errT);
-      if (src.readyState === 2) { onStatus("off"); retryT = setTimeout(connect, 5000); }
+      if (src.readyState === 2) { onStatus("off"); fails++; retryT = setTimeout(connect, Math.min(30000, 5000 * fails)); }
       else errT = setTimeout(() => onStatus("wait"), 4000);
     };
     src.onmessage = ev => { let d; try { d = JSON.parse(ev.data); } catch (e) { return; } handle(d); };
@@ -3361,7 +3380,7 @@ function presenter() {
   const save = () => store.set("dtc-show", st);
   const isWeb = /^https?:$/.test(location.protocol);
   let base = store.get("dtc-base", null) || (isWeb ? location.origin + location.pathname : PUBLIC_BASE_GUESS);
-  const joinUrl = () => base.replace(/#.*$/, "") + "#join=" + topic;
+  const joinUrl = () => base.replace(/#.*$/, "") + "#join=" + topic + (RELAY !== DEFAULT_RELAY ? "&r=" + encodeURIComponent(RELAY) : "");
   const cur = () => STAGES[st.stage];
   let lastId = "", lastTime = 0, pastCut = true;
   let answers = [], devices = new Set(), devTeam = new Map(), sub = null, replaying = true, replayT = 0, netT = 0, cloudT = 0;
@@ -4517,6 +4536,20 @@ function presenter() {
 
   window.addEventListener("resize", () => { clearTimeout(cloudT); cloudT = setTimeout(() => { if (cur().el === "sQ") renderQuestion(false); }, 200); });
 
+  /* ---------- relay switch ---------- */
+  $("#relayInput").value = RELAY;
+  $("#relayNow").textContent = RELAY;
+  function useRelay(r) {
+    r = String(r || "").trim().replace(/\/+$/, "");
+    if (!/^https?:\/\/[A-Za-z0-9.:-]+$/.test(r)) { $("#relayMsg").textContent = "Type a full address like https://ntfy.sh"; return; }
+    try { if (r === DEFAULT_RELAY) localStorage.removeItem("dtc-relay"); else localStorage.setItem("dtc-relay", r); } catch (e) { /* storage unavailable */ }
+    topic = "dtc-" + rand(12); store.set("dtc-topic", topic);
+    st.cutId = ""; st.cutTime = 0; st.timers = {}; st.revealed = {}; st.mcq = {}; st.sample = false; save();
+    location.reload();
+  }
+  $("#bRelay").addEventListener("click", () => useRelay($("#relayInput").value));
+  $$("[data-relay]").forEach(b => b.addEventListener("click", () => useRelay(b.dataset.relay)));
+
   /* ---------- start ---------- */
   renderQR(false);
   loadAllImages();
@@ -4697,7 +4730,7 @@ function phone(topic) {
 }
 
 /* ================= ROUTE ================= */
-const route = location.hash.match(/^#join=([A-Za-z0-9_-]{6,64})$/);
+const route = location.hash.match(/^#join=([A-Za-z0-9_-]{6,64})(?:&r=[^&]*)?$/);
 if (route) phone(route[1]); else presenter();
 })();
 </script>
